@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesAdministrador">
+
+    <head>    
+
+    <meta charset="utf-8"/>
+
+    <link rel="stylesheet" href="../../css/bootstrap.css">
+    <link rel="stylesheet" href="../../css/barraPadrao.css">    
+    <link rel="stylesheet" href="../../css/cadastroMedico.css">   
+    <script src="../../js/jquery.js"></script>
+    <script src="../../js/jquery.mask.min.js"></script>
+    <script src="../../js/bootstrap.js"></script>
+    <script src="../../js/angular.min.js"></script>
+    <script src="../../js/bootbox.min.js"></script>
+    <script src="../../js/ngStorage.min.js"></script>
+    <script src="../../js/operacoesAdministrador.js"></script>
+    
+    <script>
+      function selecionarMedico(parametros){
+       $.ajax({
+    	url:"http://localhost:9999/getConsultasPorPacienteMedico/"+parametros,
+    	data:{
+    	  format:'json'	
+    	},
+    	error:function(erro){
+          console.log(erro);		
+    	},
+    	success:function(consultas){
+    	  var tabela = document.getElementById("tblConsultas");
+    	  for (var i = 1; i < tabela.rows.length-1; i++)
+    	    tabela.deleteRow(i);
+    	  for (var i = 1; i <= consultas.length; i++){
+    	    var linha = tabela.insertRow(i);
+    	    linha.className = "row";
+    	    
+    	    var consulta   = consultas[i-1];
+    	    var data       = consulta.horario.data;
+    	    var horaInicio = consulta.horario.horaInicio;
+    	    var horaFim    = consulta.horario.horaFim;
+    	    
+    	    var colunaData       = linha.insertCell(0);
+    	    var colunaHoraInicio = linha.insertCell(1);
+    	    var colunaHoraFim    = linha.insertCell(2);
+    	    
+    	    colunaData.innerHTML       = data;
+    	    colunaHoraInicio.innerHTML = horaInicio;
+    	    colunaHoraFim.innerHTML    = horaFim;
+    	  }
+    	}
+       });
+      }
+    </script>
+
+        <title>Visualização de pacientes</title>
+        
+        <style>
+          .menuButton{
+            right: 110px;
+            width: 50px;
+          }
+          ul
+          {
+            list-style:none;
+          }
+          .elemento a
+          {
+            font-size: 15px;
+          }
+          .elemento a:hover
+          {
+            text-decoration: none;  
+          } 
+          .boxPesquisa{
+            right: 68px;
+          }
+          .tabelaPaciente{
+            display: block;
+            overflow-y: auto;
+            position: relative;    
+            top: 147px;
+            font-family: Arial;
+            font-size: 15px;
+            text-align:center;
+            width:90%;
+            height:495px;
+            left:5%
+          }
+          .tabelaConsulta{
+            display:block;
+            overflow-y:auto;
+            font-family:Arial;
+            font-size:15px;
+            text-align:center;
+            height : 300px;
+            width  : 568px;
+          }
+          .titulo
+          {  
+            color:#003074;
+            font-size:19px;
+          }
+          .dropdown{
+            position:relative;
+            left:0%;
+            top:0%;
+            width:568px;
+          }
+          .listaMedicos{
+            position:absolute;
+            max-height:350px;
+            overflow-y:auto;
+            overflow-x:hidden;
+          }
+        </style>
+    </head>    
+    
+    <body>
+        <form ng-controller = "PacientesController as pacientesCtrl">
+            <div class="topo">
+              <img src="../../img/icone.png" class="logo" 
+                   onmouseover = "this.style.cursor = 'pointer';"
+                   ng-click = "exibirDadosClinica()"/>                 
+              <span class="nome" 
+                    onmouseover = "this.style.cursor = 'pointer';"
+                    ng-click = "exibirDadosClinica()">{{clinica.nome}}</span>  
+              <span class="subInformacao" 
+                    onmouseover = "this.style.cursor = 'pointer';"
+                    ng-click = "exibirDadosClinica()">
+                 {{
+                  clinica.cidade+"("+clinica.uf+"), Telefone: "+
+                  "("+clinica.telefone.substring(0,2)+")"+
+                  clinica.telefone.substring(2,6)+"-"+
+                  clinica.telefone.substring(6,10)
+                 }}
+              </span> 
+                
+              <div class="input-group boxPesquisa">
+                  <input type="text" class="form-control" placeholder="Procure pacientes pelo nome">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                  </span>
+              </div> 
+                
+              <div class="menuButton">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                  <span class="glyphicon glyphicon-cog"></span>
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a href="../../Adm/homeAdm.html">Home</a>
+                  <li><a href="homeAdmClinica.html">Voltar</a></li>
+                  <li class = "divider"></li>
+                  <li><a href="../../Adm/loginAdmin.html">Sair</a></li>
+                </ul>
+              </div>  
+                                
+            </div>
+            
+            <div class="tabelaPaciente">
+             <table class="table table-hover table-responsive">
+                <thead>
+                  <tr class = "row">
+                    <th class = "col-sm-4"><center>Nome</center></th>
+                    <th class = "col-sm-2"><center>CPF</center></th>
+                    <th class = "col-sm-2"><center>Telefone</center></th>
+                    <th class = "col-sm-2"><center>Celular</center></th>
+                    <th class = "col-sm-3"><center>Cidade</center></th>
+                  </tr>
+                </thead>
+                 
+                <tbody>
+                  <tr ng-repeat = "paciente in pacientes" class = "row" 
+                      id = "paciente$index"
+                      ng-click = "selecionarPaciente($index)"
+                      onmouseover = "this.style.cursor = 'pointer';">
+                    <td class = "col-sm-4">{{paciente.nome}}</td>
+                    <td class = "col-sm-2">
+                    {{
+                      paciente.cpf.substring(0,3)+"."+
+                      paciente.cpf.substring(3,6)+"."+
+                      paciente.cpf.substring(6,9)+"-"+
+                      paciente.cpf.substring(9,11)
+                    }}     
+                    </td>  
+                    <td class = "col-sm-2">
+                    {{
+                      "("+paciente.telefone.substring(0,2)+")"+
+                      paciente.telefone.substring(2,6)+"-"+
+                      paciente.telefone.substring(6,10)
+                    }}
+                    </td> 
+                    <td class = "col-sm-2">
+                    {{
+                      "("+paciente.celular.substring(0,2)+")"+
+                      paciente.telefone.substring(2,7)+"-"+
+                      paciente.telefone.substring(7,11)
+                    }}
+                    </td>
+                   <td class = "col-sm-3">{{paciente.cidade+"("+paciente.uf+")"}}</td> 
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+          <div class = "form-content" style = "display:none;" id = "dadosClinica">
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Cidade</label><br>
+              <span>{{clinica.cidade+"("+clinica.uf+")"}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Telefone</label><br>
+              <span>
+               {{
+                 "("+clinica.telefone.substring(0,2)+")"+
+                 clinica.telefone.substring(2,6)+"-"+
+                 clinica.telefone.substring(6,10)
+               }}
+              </span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Bairro</label><br>
+              <span>{{clinica.bairro}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Endereço</label><br>
+              <span>{{clinica.endereco}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
+              <span>{{"Latitude: "+clinica.latitude+"º, Longitude: "+clinica.longitude+"º"}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
+              <ul>
+                <li class = "elemento" ng-repeat = "convenio in convenios">
+                  <a href = "#">{{convenio.nome}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class = "form-content" style = "display:none" id = "dadosPaciente">
+            <div class = "form-group">
+               <label class = "titulo">Dados pessoais</label><br>
+               <label>CPF: </label>
+               <span>
+                 {{
+                   paciente.cpf.substring(0,3)+"."+
+                   paciente.cpf.substring(3,6)+"."+
+                   paciente.cpf.substring(6,9)+"-"+
+                   paciente.cpf.substring(9,11)
+                 }} 
+               </span><br>
+               <label>Data de nascimento: </label>
+               <span>
+                 {{paciente.dataNascimento | date : 'dd/MM/yyyy'}}
+               </span>
+            </div> 
+            <div class = "form-group">
+              <label class = "titulo">Localização</label><br>
+              <label>Cidade: </label><span> {{paciente.cidade+"("+paciente.uf+")"}}</span><br>
+              <label>Endereço: </label><span> {{paciente.endereco}}</span>
+            </div>
+            <div class = "form-group">
+              <label class = "titulo">Contato</label><br>
+              <label>Telefone: </label>
+              <span>
+                {{
+                 "("+paciente.telefone.substring(0,2)+")"+
+                 paciente.telefone.substring(2,6)+"-"+
+                 paciente.telefone.substring(6,10)
+                }}
+              </span><br>
+              <label>Celular: </label>
+              <span>
+                {{
+                 "("+paciente.celular.substring(0,2)+")"+
+                 paciente.celular.substring(2,7)+"-"+
+                 paciente.celular.substring(7,11)
+                }}
+              </span>
+            </div>
+          </div>
+      </form>
+    </body>
+</html>

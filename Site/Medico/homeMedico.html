@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesMedico">
+  <head>    
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/barraPadrao.css">  
+    <link rel="stylesheet" href="../css/footer.css" media="screen and (min-width: 374px)">     
+    <link rel="stylesheet" href="../css/footerMin.css" media="screen and (max-width: 373px)"> 
+    <script src = "../js/jquery.js"></script>
+    <script src = "../js/jquery.mask.min.js"></script>
+    <script src = "../js/bootstrap.js"></script>
+    <script src = "../js/angular.min.js"></script>
+    <script src = "../js/bootbox.min.js"></script>
+    <script src = "../js/ngStorage.min.js"></script>
+    <script src = "../js/operacoesMedico.js"></script>
+    <title>Home - Médico</title>
+      
+    <style>
+      .dropdown{
+        right: 110px;
+      }
+            
+      .boxPesquisa{
+        right: 200px;
+      }
+      .tabelaClinica{
+         display: block;
+         overflow-y: auto;
+         position: relative;    
+         top: 147px;
+         font-family: Arial;
+         font-size: 15px;
+         text-align:center;
+         width:80%;
+         height:495px;
+         left:10%
+       }
+       
+       ul
+       {
+         list-style:none;
+       }
+       
+       .elemento a
+       {
+         font-size: 15px;
+       }
+       
+       .elemento a:hover
+       {
+         text-decoration: none;  
+         transition-duration: 0.75s;
+         color: #003074;
+         font-size: 16px;    
+       }
+    </style>
+  </head>   
+   
+  <body ng-controller = "HomeMedicoController as homeMedicoCtrl">
+    <form>
+      <div class="topo">
+        <img src="../img/icone.png" 
+             class="logo"
+             onmouseover = "this.style.cursor = 'pointer';"
+             ng-click = "exibirDadosMedico()"/>   
+                  
+        <span class="nome"
+              onmouseover = "this.style.cursor = 'pointer';"
+              ng-click = "exibirDadosMedico()">{{medico.nome}}</span>
+        <span class="subInformacao"
+              onmouseover = "this.style.cursor = 'pointer';"
+              ng-click = "exibirDadosMedico()">{{"CRM: "+medico.crm + "("+medico.uf+")"}}</span>
+                    
+        <div class="input-group boxPesquisa">
+          <input type="text" class="form-control" placeholder="Procure clínicas pelo nome">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+          </span>
+        </div> 
+        
+        <div class="menuButton">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-cog"></span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="loginMedico.html">Sair</a></li>
+            </ul>
+        </div>    
+      </div>  
+      <span class = "instrucao"> Por favor, selecione uma clínica.</span>
+      <div class="tabelaClinica">
+         <table class="table table-hover table-responsive">
+           <thead>
+             <tr class = "row">
+               <th class = "col-sm-6"><center>Nome</center></th>
+               <th class = "col-sm-2"><center>Telefone</center></th>
+               <th class = "col-sm-4"><center>Cidade</center></th>
+             </tr>
+           </thead>   
+           <tbody>
+               <tr ng-repeat = "clinica in clinicas" class = "row" 
+                   id = "clinica$index"
+                   ng-click = "selecionarClinica($index)"
+                   onmouseover = "this.style.cursor = 'pointer';">
+                 <td class = "col-sm-6">{{clinica.nome}}</td>
+                 <td class = "col-sm-2">
+                  {{
+                   "("+clinica.telefone.substring(0,2)+")"+
+                   clinica.telefone.substring(2,6)+"-"+
+                   clinica.telefone.substring(6,10)
+                  }}
+                 </td>
+                 <td class = "col-sm-4">{{clinica.cidade+"("+clinica.uf+")"}}</td>
+               </tr>
+           </tbody>
+         </table>
+      </div> 
+    </form>
+  </body>
+</html>

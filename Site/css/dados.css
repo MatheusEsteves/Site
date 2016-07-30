@@ -1,0 +1,31 @@
+.formDados{
+  display: block;
+  width: 80%;
+  height: 450px;
+  position: relative;
+  left: 10%;
+  top: 175px; 
+}
+
+.linha
+{
+   display:inline-block;
+   width: 100%;
+   margin-bottom: 10px;    
+}
+
+.nomeDado
+{
+  color: #333;
+  font-family: arial; 
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 5px;      
+}
+
+.dado
+{
+  color: #333;
+  font-family: arial; 
+  font-size: 16px; 
+}

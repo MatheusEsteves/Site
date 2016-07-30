@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesPaciente">
+
+<head>    
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="../css/bootstrap.css"  media="screen">        
+        <link rel="stylesheet" href="../css/corrigeFormCadastro.css"  media="screen and (min-width: 992px)"> 
+        <link rel="stylesheet" href="../css/loginPadrao.css">        
+        <link rel="stylesheet" href="../css/footer.css" media="screen and (min-width: 374px)">     
+        <link rel="stylesheet" href="../css/footerMin.css" media="screen and (max-width: 373px)">
+        <script src="../js/jquery.js"></script>
+        <script src="../js/jquery.mask.min.js"></script>
+        <script src="../js/bootstrap.js"></script>
+        <script src="../js/angular.min.js"></script>
+        <script src="../js/bootbox.min.js"></script>
+        <script src="../js/ngStorage.min.js"></script>
+        <script src="../js/operacoesPaciente.js"></script>
+            
+        <title>Cadastro de paciente</title>
+        <style>
+          .well{
+            background: #ebebeb;                                   
+            top: 30px;                  
+          }                  
+        </style>
+</head>    
+
+<body> <!--Conecta o hmtl com o vue-->                
+            <form  class="col-md-offset-2 col-md-8 col-md-offset-2 well"
+                   ng-controller = "CadastroPacienteController as cadastroPacienteCtrl">               
+
+                        <div class="row">                            
+                               <div class="col-md-5">                                  
+                                  <div class="form-group">
+                                       <label for="txtNome">Nome</label>
+                                      <input type="text" class="form-control" id="txtNome" ng-model = "paciente.nome" required> 
+                                  </div>                            
+                                </div>
+
+
+                                 <div class="col-md-5">
+                                    <!-- CEP -->
+                                    <div class="form-group">
+                                        <label for="txtCep">CEP</label>
+                                        <!--Quando o evento keyup for disparado execute o método buscar-->
+                                        <input type="text" class="form-control" id="txtCep" ng-model = "paciente.cep" ng-change = "pesquisarEndereco()" required>
+                                    </div>
+                                </div> 
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5"></div>
+
+                            <div class="col-md-5">
+                                <!--Mensagem a ser exibida caso o CEP não seja encontrado-->
+                                <p class="text-danger" style = "display:none" id = "campoNaoLocalizado">
+                                    <strong>Endereço não localizado!</strong> Por favor, digite o CEP novamente.
+                                </p>
+                            </div>
+                        </div>
+                
+                        <div class="row">
+                            <div class="col-md-5">                                  
+                                  <div class="form-group">                        
+                                      <label for="txtCpf">CPF</label>
+                                      <input type="text" class="form-control" id="txtCpf" ng-model = "paciente.cpf" ng-change="pesquisarCpf()" pattern="\d{3}.\d{3}.\d{3}-\d{2}" required>                                                
+                                  </div> 
+                            </div>
+
+                            <div class="col-md-3">
+                                 <!--Logradouro-->
+                                  <div class="form-group">
+                                      <label for="txtLogradouro">Logradouro</label>
+                                      <input type="text" class="form-control disabled" id="txtLogradouro" ng-model = "logradouro" disabled> 
+                                  </div>    
+                            </div>     
+
+                            <div class="col-md-2">
+                                <div class="form-group">                        
+                                      <label for="txtNumero">Número</label>
+                                      <input type="text" class="form-control" id="txtNumero" ng-model = "numero" required>         
+                                </div>
+                            </div>
+                       </div>
+                       
+                       <div class="row">
+                            <div class="col-md-5">
+                                <!--Mensagem a ser exibida caso o CEP não seja encontrado-->
+                                <p class="text-danger" style = "display:none" id = "cpfExistente">
+                                    <strong>Já existe paciente cadastrado com esse CPF!</strong>
+                                </p>
+                            </div>
+                            <div class="col-md-5"></div>
+                        </div>
+
+                       <div class="row">
+                            <div class="col-md-5">                                  
+                                 <div class="form-group">                        
+                                      <label for="txtSenha">Senha</label>
+                                      <input type="password" class="form-control" id="txtSenha" ng-model = "paciente.senha" required>                                                
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <div class="form-group">                        
+                                      <label for="txtComplemento">Complemento</label>
+                                      <input type="text" class="form-control" id="txtComplemento" ng-model = "paciente.complemento"> 
+                                 </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">                                  
+                                 <div class="form-group">                        
+                                      <label for="txtDataNascimento">Data de nascimento</label>
+                                      <input type="date" class="form-control" id="txtDataNascimento" required>                                                
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <!--Bairro-->
+                                <div class="form-group">
+                                      <label for="txtBairro">Bairro</label>
+                                      <input type="text" class="form-control disabled" id="txtBairro" ng-model="paciente.bairro" disabled>
+                                 </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">                                  
+                                <div class="form-group">                        
+                                      <label for="txtTelefone">Telefone</label>
+                                      <input type="text" class="form-control" id="txtTelefone" ng-model = "paciente.telefone" pattern="\(\d{2}\) \d{4}-\d{4}" required>                                         
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                  <!--Cidade-->
+                                  <div class="form-group">
+                                      <label for="txtCidade">Cidade</label>
+                                      <input type="text" class="form-control disabled" id="txtCidade" ng-model = "paciente.cidade" disabled>
+                                  </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">                                  
+                                <div class="form-group">                        
+                                      <label for="txtCelular">Celular</label>
+                                      <input type="text" class="form-control" id="txtCelular" ng-model = "paciente.celular" pattern="\(\d{2}\) \d{5}-\d{4}">                                                
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                  <!--Estado-->
+                                  <div class="form-group">
+                                      <label for="txtEstado">Estado</label>
+                                      <input type="text" class="form-control disabled" id="txtEstado" ng-model = "paciente.uf" disabled>
+                                  </div> 
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5">
+                         
+                            </div>
+                            
+                            <div class="col-md-5">
+                                  <div class="form-group">
+                                      <input type="submit" ng-click = "cadastrarPaciente()" id = "btnCadastrar" class="btn btn-primary" value="Cadastrar">                
+                                  </div> 
+                            </div>
+
+                        </div>           
+        </form>
+
+       
+       <div class="footer">
+            <a href="#" class="menu">Termos de uso</a>
+            <a href="#" class="menu">Privacidade</a>
+            <span class="menu">&copy; 2016 Médico Fácil</span>
+        </div>
+         
+    <script>
+        jQuery(function($){
+               $("#txtCpf").mask("999.999.999-99");               
+               $("#txtTelefone").mask("(99) 9999-9999");
+               $("#txtCelular").mask("(99) 99999-9999");
+        });
+    </script>
+</body>
+</html>

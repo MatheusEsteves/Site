@@ -1,0 +1,73 @@
+.topo
+{
+    display: block;
+    background: #003074;
+    height: 100px;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+.logo
+{
+    width: 80px;
+    height: 80px;
+    position: relative;
+    top: 10px;
+    left: 50px;
+}
+
+.nome
+{    
+    font-family: Arial;
+    color: #FFF;
+    font-size: 20px;            
+    position: fixed;
+    top: 35px;
+    margin-left: 75px;
+}
+
+.subInformacao
+{
+    font-family: Arial;
+    color: #FFF;
+    font-size: 12px;
+    position: fixed;
+    top: 65px;
+    margin-left: 75px;
+}
+
+.boxPesquisa
+{
+    width: 400px;
+    position: fixed;
+    top: 35px;
+    right: 150px;
+}
+
+.dropdown
+{
+    position: fixed;
+    right: 60px;
+    top: 35px;
+}
+
+ul.dropdown-menu
+{
+    min-width: 100px;
+}
+
+
+table
+{        
+    border: 1px solid #eee;        
+}
+
+.instrucao{
+	position    : relative;
+	font-family : Arial;
+	font-size   : 18px;
+    top         : 125px;
+    left        : 10%
+ }

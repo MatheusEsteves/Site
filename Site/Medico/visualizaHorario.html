@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesMedico">
+   <head>    
+     <meta charset="utf-8"/>
+     <link rel="stylesheet" href="../css/bootstrap.css">
+     <link rel="stylesheet" href="../css/barraPadrao.css">    
+     <script src="../js/jquery.js"></script>
+     <script src="../js/bootstrap.js"></script>
+     <script src="../js/angular.min.js"></script>
+     <script src="../js/ngStorage.min.js"></script>
+     <script src="../js/bootbox.min.js"></script>
+     <script src="../js/operacoesMedico.js"></script>
+     
+     <title>Visualização de horários</title>
+        
+     <style>
+       .menuButton{
+         right: 110px;
+       }
+            
+       .boxPesquisa{
+         right: 200px;
+       }
+       .informacao{
+         position:relative;
+         top:124px;
+         left:25%;
+         width:50%;
+         font-size:15px;
+         display:none;
+       }
+       .diaSemana{
+         position: relative;
+         top:40px;
+         left:15%;
+       }
+       .tabelaHorario{
+         display: block;
+         overflow-y: auto;
+         position: relative;    
+         top: 147px;
+         font-family: Arial;
+         font-size: 15px;
+         text-align:center;
+         width:50%;
+         height:495px;
+         left:25%
+       }
+       
+       .campoData{
+         position: relative;
+         width:200px;
+         left:18%;
+         top:3px;
+       }
+       
+       .diaSemana
+       {
+        width:132px;
+       }
+       
+       .campoDiaSemana
+       {
+        position:relative;
+        top:-71px;
+        left:35%;
+       }
+       
+       .exibirTodos
+       {
+        position:relative;
+        top:-65px;
+        left:72%;
+       }
+       
+       .areaPesquisa
+       {
+         position:relative;
+         top:121px;
+         height:35px;
+         width:50%;
+         left:25%;
+       }
+       
+       ul
+       {
+         list-style:none;
+       }
+       
+       .elemento a
+       {
+         font-size: 15px;
+       }
+       
+       .elemento a:hover
+       {
+         text-decoration: none;  
+         transition-duration: 0.75s;
+         color: #003074;
+         font-size: 16px;    
+       }
+       
+       .campoPaciente
+       {
+         position:relative;
+         background: #ebebeb;
+         border-radius: 3px;
+         height:50%;
+         top:10%;
+       }
+       
+       .dadosPaciente
+       {
+         position:relative;
+         left:5%;
+         top:10%;
+       }
+       
+       #dadosClinica
+       {
+         position:relative;
+         left:10%;
+       }
+      </style>
+   </head>    
+    
+   <body>
+     <form ng-controller = "HorariosController as horariosCtrl">
+       <div class="topo">
+          <img src="../img/icone.png" class="logo" 
+               onmouseover = "this.style.cursor = 'pointer';"
+               ng-click = "exibirDadosClinica()"/>                 
+          <span class="nome" 
+                onmouseover = "this.style.cursor = 'pointer';"
+                ng-click = "exibirDadosClinica()">{{clinica.nome}}</span>  
+          <span class="subInformacao" 
+                onmouseover = "this.style.cursor = 'pointer';"
+                ng-click = "exibirDadosClinica()">
+                 {{
+                  clinica.cidade+"("+clinica.uf+"), Telefone: "+
+                  "("+clinica.telefone.substring(0,2)+")"+
+                  clinica.telefone.substring(2,6)+"-"+
+                  clinica.telefone.substring(6,10)
+                 }}
+          </span>     
+                
+          <div class="menuButton">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" ng-click = "fecharAlert()">
+              <span class="glyphicon glyphicon-cog"></span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="homeMedico.html">Home</a></li>
+              <li><a href="cadastraHorario.html">Cadastrar Horário</a></li>
+              <li class="divider"></li>
+              <li><a href="loginMedico.html">Sair</a></li>
+            </ul>
+          </div>                
+       </div>
+            
+       <div class = "alert alert-info fade in informacao" id = "alertExclusao">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          O horário selecionado foi excluído com sucesso!
+       </div>    
+       
+       <div class = "alert alert-info fade in informacao" id = "alertAlteracao">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          O horário selecionado foi alterado com sucesso!
+       </div> 
+       
+       <div class = "areaPesquisa">    
+         <div class = "campoData">
+           <input type = "date" id = "calendario" class = "form-control" ng-model = "data" ng-change = "selecionarData()" ng-click = "fecharAlert()">
+         </div>
+                             
+         <div class="dropdown campoDiaSemana">     
+           <button class = "btn btn-default dropdown-toggle diaSemana" data-toggle = "dropdown" id = "diaSemana" ng-click = "fecharAlert()">
+             {{diaSemana}}
+             <span class = "caret"></span>
+           </button>
+           <ul class="dropdown-menu">
+             <li ng-click = "selecionarDia('SEG','Segunda-feira')"><a href="#">Segunda-feira</a></li>
+             <li ng-click = "selecionarDia('TER','Terça-feira')"><a href="#">Terça-feira</a></li>
+             <li ng-click = "selecionarDia('QUA','Quarta-feira')"><a href="#">Quarta-feira</a></li>
+             <li ng-click = "selecionarDia('QUI','Quinta-feira')"><a href="#">Quinta-feira</a></li>
+             <li ng-click = "selecionarDia('SEX','Sexta-feira')"><a href="#">Sexta-feira</a></li>
+             <li ng-click = "selecionarDia('SÁB','Sábado')"><a href="#">Sábado</a></li>
+             <li ng-click = "selecionarDia('DOM','Domingo')"><a href="#">Domingo</a></li>
+           </ul>
+         </div>      
+       
+         <a href="#" data-toggle="tooltip" data-placement="right" title="Exibir todos os horários.">
+           <button class = "btn btn-default exibirTodos" ng-click = "exibirTodos()">
+             <span class = "glyphicon glyphicon-th-list"></span>     
+           </button>
+         </a>
+       </div>             
+      
+       <div class="tabelaHorario">
+          <table class="table table-hover">
+             <thead>
+               <tr class = "row">
+                 <th class = "col-sm-4"><center>Data</center></th>
+                 <th class = "col-sm-4"><center>Horario de início</center></th>
+                 <th class = "col-sm-4"><center>Horario de término</center></th>
+               </tr>
+             </thead>
+                 
+             <tbody>
+               <tr ng-repeat   = "horario in horarios" class = "row"
+                   onmouseover = "this.style.cursor = 'pointer';"
+                   ng-click    = "selecionarHorario($index)">
+                 <td class = "col-sm-4">{{horario.data | date: 'dd/MM/yyyy'}}</td>
+                 <td class = "col-sm-4">{{horario.horaInicio}}</td>
+                 <td class = "col-sm-4">{{horario.horaFim}}</td>
+               </tr>
+             </tbody>      
+          </table>
+        </div>
+        
+        <div class = "form-content" style = "display:none;" id = "dadosClinica">
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Cidade</label><br>
+              <span>{{clinica.cidade+"("+clinica.uf+")"}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Telefone</label><br>
+              <span>
+               {{
+                 "("+clinica.telefone.substring(0,2)+")"+
+                 clinica.telefone.substring(2,6)+"-"+
+                 clinica.telefone.substring(6,10)
+               }}
+              </span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Bairro</label><br>
+              <span>{{clinica.bairro}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Endereço</label><br>
+              <span>{{clinica.endereco}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
+              <span>{{"Latitude: "+clinica.latitude+"º, Longitude: "+clinica.longitude+"º"}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
+              <ul>
+                <li class = "elemento" ng-repeat = "convenio in convenios">
+                  <a href = "#">{{convenio.nome}}</a>
+                </li>
+              </ul>
+            </div>
+        </div>
+        
+        <div class = "form-content" style = "display:none;" id = "exclusaoHorario">
+             <div class = "form-group">
+               <span style = 'font-family:Arial;font-size:15.2px;'>
+                 Atenção! O paciente abaixo possui consulta marcada com você para esse horário.
+               </span>
+             </div>
+             <div class = "campoPaciente">
+             <div class = "dadosPaciente">
+             <div class = "form-group">
+               <label for = "lblTituloNome">Nome</label><br>
+               <span>{{paciente.nome}}</span>
+             </div>
+             <div class = "form-group">
+               <label for = "lblTituloCpf">CPF</label><br>
+               <span>
+                {{
+                 paciente.cpf.substring(0,3)+"."+
+                 paciente.cpf.substring(3,6)+"."+
+                 paciente.cpf.substring(6,9)+"-"+
+                 paciente.cpf.substring(9,11)
+                }}
+               </span>
+             </div>
+             <div class = "form-group">
+               <label for = "lblTituloTelefone">Telefone</label><br>
+               <span>
+                {{
+                 "("+paciente.telefone.substring(0,2)+")"+
+                 paciente.telefone.substring(2,6)+"-"+
+                 paciente.telefone.substring(6,10)
+                }}
+               </span>
+              </div>
+             </div>
+             </div>
+             <div class = "form-group">
+               <span style = 'font-family:Arial;font-size:15.2px;'>
+                 Caso esse horário seja excluído, essa consulta será cancelada automaticamente.<br>
+                 Deseja excluí-lo mesmo assim?
+               </span>
+             </div>
+        </div>
+      
+        <div class = "form-content" style = "display:none;" id = "alteracaoHorario"> 
+          <form class = "form" role = "form">
+            <div class="form-group">
+              <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha uma data para realizar seus atendimentos!">
+                <label for="txtData">Data:</label>
+                <input type ="date" class = "form-control" id="txtData" ng-value = "horario.data">
+              </a>
+            </div>
+        
+            <div class="form-group">
+              <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha um horário para iniciar seus atendimentos!">
+                <label for="txtInicio">Início:</label>
+                <input type="time" class="form-control" id="txtInicio" ng-value = "horario.horaInicio">
+              </a>
+            </div>
+            <div class="form-group">
+              <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha um horário para finalizar seus atendimentos!">
+                <label for="txtFim">Fim:</label>
+                <input type="time" class="form-control" id="txtFim" ng-value = "horario.horaFim">
+              </a>
+            </div>
+            
+            <div class = "alert alert-danger fade in" id = "alertErroAlteracao" style = "display:none">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              Você já trabalha por volta desse horário nesse dia! Escolha um novo para alterar.
+            </div>
+          </form>
+        </div>
+     </form>
+   </body>
+</html>

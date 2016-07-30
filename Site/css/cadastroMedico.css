@@ -1,0 +1,63 @@
+.conteiner
+{
+    position: absolute;
+    top: 250px;
+    left: 35%;
+    width: 350px;
+    height: 400px;
+    background: #ebebeb;
+    box-shadow:  0px 2px 2px rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.campos{
+    width: 250px; 
+    position: relative;
+    left: 50px;
+    top: 50px;
+}
+
+.topoBox
+{
+    width: 100%;
+    height: 100px;    
+    font-family: arial;
+    color: rgb(51,51,51);
+    font-weight: bold;
+}
+
+.mf{
+    font-size: 35px;
+    position: relative;
+    top: 20px;
+    left: 70px;
+    text-align: center;
+}
+
+.nomeBox{
+    font-size: 25px;    
+    position:absolute;
+    top: 60px;
+    left: 50px;
+    width: 250px;
+    text-align: center;
+    color: #215298;        
+}
+
+.btn{
+    width: 100%;
+}
+
+
+
+
+.btn-primary{
+    border: 1px solid #1a4686;
+    background: #215298;    
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:link, .btn-primary:visited
+{    
+    transition-duration: 1s;
+    background: #003074;
+}

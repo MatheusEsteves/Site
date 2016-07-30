@@ -1,0 +1,39 @@
+#boxLista
+{
+    display: block;
+    position: relative;
+    width: 80%;
+    height: 450px;
+    left: 10%;
+    top: 175px;
+    font-family: arial;
+    color: #333;
+}
+
+#titulo
+{   
+    font-size: 24px;
+    font-weight: bold;
+    position:relative;
+    left: 0px;    
+}
+
+
+ul
+{    
+  list-style: none;
+}
+
+.elemento a
+{
+    font-size: 17px;
+    color: #215298;
+}
+
+.elemento a:hover{
+    text-decoration: none;
+    
+    transition-duration: 0.75s;
+    color: #003074;
+    font-size: 18px;    
+}

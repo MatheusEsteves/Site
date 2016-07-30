@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesAdministrador">
+
+    <head>    
+
+    <meta charset="utf-8"/>
+
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/loginPadrao.css">
+    <link rel="stylesheet" href="../css/footer.css" media="screen and (min-width: 374px)">     
+    <link rel="stylesheet" href="../css/footerMin.css" media="screen and (max-width: 373px)">
+    <script src="../js/jquery.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+    <script src="../js/angular.min.js"></script>
+    <script src="../js/ngStorage.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <script src="../js/operacoesAdministrador.js"></script>
+
+        <title>Login de administrador</title>
+    </head>
+    <body ng-controller = "ConexaoBdController as conexaoBdCtrl"
+          ng-init = "conectarBd()">
+        <form role="form" class="conteiner" ng-controller = "LoginAdmController as loginAdmCtrl">
+           <div class="topo">
+               <span class="mf">Médico Fácil</span>
+               <span class="titulo">Admin</span>               
+            </div>
+            
+            <div class="form-group campos">
+                
+                <div class="form-group">
+                  <label for="txtCpf">Usuário:</label>
+                  <input type="text" class="form-control" id="txtUsuario" ng-model = "adm.usuario" placeholder="Digite seu Usuário" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="txtSenha">Senha:</label>
+                  <input type="password" class="form-control" id="txtSenha" ng-model = "adm.senha" placeholder="Digite sua senha" required>
+                </div>
+                
+                <input type="submit" class="btn btn-primary" value="Entrar" ng-click="loginAdm()">
+                <a id="EsqueciSenha">Esqueci minha senha.</a>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <a href="#" class="menu">Termos de uso</a>
+            <a href="#" class="menu">Privacidade</a>
+            <span class="menu">&copy; 2016 Médico Fácil</span>
+        </div>        
+    </body>
+</html>
+    

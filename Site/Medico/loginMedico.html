@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesMedico">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Login de médico</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/loginPadrao.css">
+    <link rel="stylesheet" href="../css/footer.css" media="screen and (min-width: 374px)">     
+    <link rel="stylesheet" href="../css/footerMin.css" media="screen and (max-width: 373px)">
+    <script src = "../js/jquery.js"></script>
+    <script src = "../js/jquery.mask.min.js"></script>
+    <script src = "../js/bootstrap.js"></script>
+    <script src = "../js/angular.min.js"></script>
+    <script src = "../js/bootbox.min.js"></script>
+    <script src = "../js/ngStorage.min.js"></script>
+    <script src = "../js/operacoesMedico.js"></script>
+    
+    <style>
+      .btnOkModal{
+        position : fixed;
+        width    : 25%;
+        left     : 75%;
+      }
+    </style>
+  </head>
+
+  <body ng-controller = "ConexaoBdController as conexaoBdController"
+        ng-init = "conexaoBdController.conectarBd()">
+    <form role="form" 
+          class="conteiner"
+          name = "frmLoginMedico"
+          ng-controller = "LoginMedicoController as loginMedicoCtrl">
+       <div class="topo">
+         <span class="mf">Médico Fácil</span>
+         <span class="titulo">Médico</span>    
+       </div>
+            
+       <div class="form-group campos">    
+          <div class="form-group">
+             <label for="txtCpf">CRM:</label>
+             <input type="text" ng-model = "loginMedicoCtrl.medico.crm" class="form-control" id="txtCpf" placeholder="Digite seu CRM" required>
+          </div>
+                
+          <div class="form-group">
+             <label for="txtSenha">Senha:</label>
+             <input type="password" ng-model = "loginMedicoCtrl.medico.senha" class="form-control" id="txtSenha" placeholder="Digite sua senha" required>
+          </div>
+                
+          <input type= "submit" ng-click = "loginMedicoCtrl.loginMedico()" class="btn btn-primary" value="Entrar">
+          <a id="EsqueciSenha">Esqueci minha senha.</a>
+       </div>
+    </form>
+        
+    <div class="footer">
+       <a href="#" class="menu">Termos de uso</a>
+       <a href="#" class="menu">Privacidade</a>
+       <span class="menu">&copy; 2016 Médico Fácil</span>
+    </div>        
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesPaciente">
+  <head>    
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/barraPadrao.css">
+    <script src="../js/jquery.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+    <script src="../js/bootstrap.js"></script>        
+    <script src="../js/angular.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <script src="../js/ngStorage.min.js"></script>
+    <script src="../js/operacoesPaciente.js"></script>
+
+        <title>Visualização de paciente</title>
+        
+        <style>
+            .menuButton{
+                right: 110px;
+            }
+            
+            .boxPesquisa{
+              right : 180px;
+            }
+            
+            .informacao{
+              position:relative;
+              top:122px;
+              left:47%;
+              width:40%;
+              font-size:15px;
+              display:none
+            }
+            
+            .instrucao{
+	          position    : relative;
+	          font-family : Arial;
+ 	          font-size   : 18.5px;
+              top         : 125px;
+              left        : 47%;
+            }
+            
+            .tabelaHorariosLivres{
+              display: block;
+              overflow-y: auto;
+              position: relative;    
+              top: 147px;
+              font-family: Arial;
+              font-size: 15px;
+              text-align:center;
+              width:40%;
+              height:450px;
+              left:47%
+            }
+            
+            ul
+            {
+              list-style:none;
+            }
+       
+            .elemento a
+            {
+              font-size: 15px;
+            }
+       
+            .elemento a:hover
+            {
+              text-decoration: none;  
+              transition-duration: 0.75s;
+              color: #003074;
+              font-size: 16px;    
+            }
+            
+            .dadosConsulta
+            {
+              position:relative;
+              left:10%;
+              top:5%;
+            }
+            
+            .alteracaoConsulta
+            {
+              position:absolute;
+              border-radius: 10px;
+              top:170px;
+              left:12%;
+              width:400px;
+              height:450px;
+              background:#F4F4F4
+            }
+            .titulo
+            {
+              color:#003074;
+              font-size:19px;
+            }
+        </style>
+    </head>    
+    
+    <body>
+        <form ng-controller = "AlteracaoConsultaController as alteracaoConsultaCtrl">
+            <div class="topo">             
+                <img src="../img/icone.png" 
+                     class="logo"
+                     onmouseover = "this.style.cursor = 'pointer';"
+                     ng-click = "exibirDadosMedico()"/>   
+                  
+               <span class="nome"
+                     onmouseover = "this.style.cursor = 'pointer';"
+                     ng-click = "exibirDadosMedico()">{{consulta.horario.medico.nome}}</span>
+        
+               <span class="subInformacao"
+                     onmouseover = "this.style.cursor = 'pointer';"
+                     ng-click = "exibirDadosMedico()">{{"CRM: "+consulta.horario.medico.crm + "("+consulta.horario.medico.uf+")"}}</span>
+                
+                <div class="input-group boxPesquisa">
+                 <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar horário por data.">
+                  <input type="date" class="form-control" id = "txtData" ng-model = "data" ng-change = "pesquisarHorario()">
+                 </a>
+                 <span class="input-group-btn">
+                  <a href="#" data-toggle="tooltip" data-placement="right" title="Exibir todos os horários.">
+                    <button class="btn btn-default" type="button" ng-click = "exibirTodos()"><span class="glyphicon glyphicon-search"></span></button>
+                  </a>
+                 </span>
+                </div> 
+                
+                 <div class="menuButton">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-cog"></span>
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                      <li><a href="homePaciente.html">Home</a></li>   
+                      <li><a href="visualizaConsulta.html">Voltar</a></li> 
+                      <li><a href="cadastroPaciente.html">Cadastre-se</a></li>                  
+                      <li class="divider"></li>
+                      <li><a href="loginPaciente.html">Sair</a></li>
+                    </ul>
+                  </div>                
+            </div>
+            
+            <div class = "alert alert-info fade in informacao" id = "alertAlteracaoConsulta">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              A sua consulta foi reagendada com sucesso para {{consulta.horario.data | date: 'dd/MM/yyyy'}} às {{consulta.horario.horaInicio}}!
+            </div>
+            
+            <span class = "instrucao">Escolha um dos horários livres abaixo para reagendar a sua consulta</span>
+            <div class="tabelaHorariosLivres">
+             <table class="table table-hover">
+                <thead>
+                  <tr class = "row">
+                    <th class = "col-sm-4"><center>Data</center></th>
+                    <th class = "col-sm-4"><center>Horario de início</center></th>
+                    <th class = "col-sm-4"><center>Horario de término</center></th>
+                  </tr>
+                </thead>
+                 
+                <tbody>
+                  <tr ng-repeat   = "horario in horarios" class = "row"
+                   onmouseover = "this.style.cursor = 'pointer';"
+                   ng-click    = "selecionarHorario($index)">
+                     <td class = "col-sm-4">{{horario.data | date: 'dd/MM/yyyy'}}</td>
+                     <td class = "col-sm-4">{{horario.horaInicio}}</td>
+                     <td class = "col-sm-4">{{horario.horaFim}}</td>
+                 </tr> 
+                </tbody>
+              </table>
+            </div>
+            
+            <div class = "form-content" style = "display:none;" id = "dadosMedico">
+              <div class = "form-group">
+                <label style = 'font-family:Arial;font-size:16px;'>Especialidades</label><br>
+                <ul>
+                  <li class = "elemento" ng-repeat = "especialidade in especialidadesMedico">
+                    <a href = "#">{{especialidade.nome}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div> 
+            
+          <div class = "form-group alteracaoConsulta">
+            <div class = "form-group dadosConsulta">
+             <div class = "form-group">
+               <label class = "titulo">Clínica</label><br>
+               <label>Nome: </label><span> {{consulta.horario.clinica.nome}}</span><br>
+               <label>Cidade: </label><span> {{consulta.horario.clinica.cidade+"("+consulta.horario.clinica.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Médico</label><br>
+               <label>Nome: </label><span> {{consulta.horario.medico.nome}}</span><br>
+               <label>CRM: </label><span> {{consulta.horario.medico.crm+"("+consulta.horario.medico.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Paciente</label><br>
+               <label>Nome: </label><span> {{consulta.paciente.nome}}</span><br>
+               <label>CPF: </label>
+               <span>
+                {{
+                 consulta.paciente.cpf.substring(0,3)+"."+
+                 consulta.paciente.cpf.substring(3,6)+"."+
+                 consulta.paciente.cpf.substring(6,9)+"-"+
+                 consulta.paciente.cpf.substring(9,11)
+                }}
+               </span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Horário</label><br>
+               <label>Data: </label>
+               <span>{{consulta.horario.data | date: 'dd/MM/yyyy'}}</span><br>
+               <label>Início da consulta: </label>
+               <span>{{consulta.horario.horaInicio}}</span><br>
+               <label>Término da consulta: </label>
+               <span>{{consulta.horario.horaFim}}</span>
+             </div>
+            </div>
+          </div>
+          
+          <div class = "form-group" id = "consultaAgendada" style = "display:none">
+             <div class = "form-group">
+               <span style = 'font-family:Arial;font-size:16px;'>
+                 Você já possui a consulta abaixo agendada por volta desse horário.<br>
+                 Por favor, escolha outro horário, caso possível.
+               </span>
+             </div><br>
+             <div class = "form-group">
+               <label class = "titulo">Clínica</label>
+               <label>Nome: </label><span>{{consultaAgendada.horario.clinica.nome}}</span><br>
+               <label>Cidade: </label><span>{{consultaAgendada.horario.clinica.cidade+"("+consultaAgendada.horario.clinica.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Médico</label><br>
+               <label>Nome: </label><span> {{consultaAgendada.horario.medico.nome}}</span><br>
+               <label>CRM: </label><span> {{consultaAgendada.horario.medico.crm+"("+consultaAgendada.horario.medico.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Paciente</label><br>
+               <label>Nome: </label><span> {{consultaAgendada.paciente.nome}}</span><br>
+               <label>CPF: </label>
+               <span>
+                {{
+                 consultaAgendada.paciente.cpf.substring(0,3)+"."+
+                 consultaAgendada.paciente.cpf.substring(3,6)+"."+
+                 consultaAgendada.paciente.cpf.substring(6,9)+"-"+
+                 consultaAgendada.paciente.cpf.substring(9,11)
+                }}
+               </span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Horário</label><br>
+               <label>Data: </label>
+               <span>{{consultaAgendada.horario.data | date: 'dd/MM/yyyy'}}</span><br>
+               <label>Início da consulta: </label>
+               <span>{{consultaAgendada.horario.horaInicio}}</span><br>
+               <label>Término da consulta: </label>
+               <span>{{consultaAgendada.horario.horaFim}}</span>
+             </div>
+          </div>
+          
+          <div class = "form-group" id = "alteracaoConsulta" style = "display:none">
+             <div class = "form-group">
+               <label class = "titulo">Clínica</label><br>
+               <label>Nome: </label><span>{{consulta.horario.clinica.nome}}</span><br>
+               <label>Cidade: </label><span>{{consulta.horario.clinica.cidade+"("+consulta.horario.clinica.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Médico</label><br>
+               <label>Nome: </label><span> {{consulta.horario.medico.nome}}</span><br>
+               <label>CRM: </label><span> {{consulta.horario.medico.crm+"("+consulta.horario.medico.uf+")"}}</span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Paciente</label><br>
+               <label>Nome: </label><span> {{consulta.paciente.nome}}</span><br>
+               <label>CPF: </label>
+               <span>
+                {{
+                 consulta.paciente.cpf.substring(0,3)+"."+
+                 consulta.paciente.cpf.substring(3,6)+"."+
+                 consulta.paciente.cpf.substring(6,9)+"-"+
+                 consulta.paciente.cpf.substring(9,11)
+                }}
+               </span>
+             </div>
+             <div class = "form-group">
+               <label class = "titulo">Horário</label><br>
+               <label>Data: </label>
+               <span>{{horario.data | date: 'dd/MM/yyyy'}}</span><br>
+               <label>Início da consulta: </label>
+               <span>{{horario.horaInicio}}</span><br>
+               <label>Término da consulta: </label>
+               <span>{{horario.horaFim}}</span>
+             </div>
+             <div class = "form-group">
+               <span style = 'font-family:Arial;font-size:16px;'>
+                 Deseja agendar essa nova consulta adiada ?
+               </span>
+             </div>
+          </div>
+        </form>
+    </body>
+</html>

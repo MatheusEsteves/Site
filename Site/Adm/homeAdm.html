@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesAdministrador">
+
+    <head>    
+
+    <meta charset="utf-8"/>
+
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/barraPadrao.css">    
+    <link rel="stylesheet" href="../css/cadastroMedico.css">   
+    <script src="../js/jquery.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+    <script src="../js/angular.min.js"></script>
+    <script src="../js/ngStorage.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <script src="../js/operacoesAdministrador.js"></script>
+
+        <title>Home - Administrador</title>
+    </head>    
+    
+    <style>
+        .conteiner
+        {
+         height: 300px;
+        }
+        .menuButton{
+          right: 110px;
+          width: 50px;
+        }
+        .boxPesquisa{
+          right: 135px;
+        }
+        .tabelaInstituicao{
+          display: block;
+          overflow-y: auto;
+          position: relative;    
+          top: 177px;
+          font-family: Arial;
+          font-size: 15px;
+          text-align:center;
+          width:80%;
+          height:495px;
+          left:10%
+        }
+        .selecaoInstituicao{
+	      position    : absolute;
+	      top         : 135px;
+          right       : 135px;
+        }
+        .instrucao{
+          position    : relative;
+          font-family : Arial;
+	      font-size   : 18px;
+	      left        : 10%;
+	      top         : 155px;
+        }
+        .opcoesTabela{
+          position : relative;
+          right    : 0%;
+        }
+    </style>
+    
+    <body>
+        <form ng-controller = "HomeAdmController as homeAdmCtrl">
+          <div class="topo">
+            <img src="../img/icone.png" class="logo"/>
+                            
+            <span class="nome">{{usuario}}</span>  
+                
+            <div class="input-group boxPesquisa">
+              <input type="text" class="form-control" placeholder="Procure instituições pelo nome">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+              </span>
+            </div> 
+        
+            <div class="menuButton">
+              <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-cog"></span>
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="loginAdmin.html">Sair</a></li>
+              </ul>
+            </div>                                   
+          </div>
+             
+          <section ng-controller = "TabController as tab">
+            <div class = "instrucao">
+              <span> Por favor, selecione uma clínica ou um pronto socorro.</span>
+            </div>
+             
+            <div class = "selecaoInstituicao">
+              <ul class = "nav nav-pills">
+                <li ng-class = "{active:tab.isSet(1)}">
+                  <a href ng-click = "tab.setTab(1)"> Clínicas </a>
+                </li>
+                <li ng-class = "{active:tab.isSet(2)}">
+                  <a href ng-click = "tab.setTab(2)"> Pronto socorros </a>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="tabelaInstituicao" ng-show = "tab.isSet(1)">
+                <table class="table table-hover table-responsive">
+                  <thead>
+                    <tr class = "row">
+                      <th class = "col-sm-6"><center>Nome</center></th>
+                      <th class = "col-sm-2"><center>Telefone</center></th>
+                      <th class = "col-sm-4"><center>Cidade</center></th>
+                    </tr>
+                  </thead>   
+                  <tbody>
+                     <tr ng-repeat = "clinica in clinicas" class = "row" 
+                         id = "clinica$index"
+                         ng-click = "selecionarClinica($index)"
+                         onmouseover = "this.style.cursor = 'pointer';">
+                       <td class = "col-sm-6">{{clinica.nome}}</td>
+                       <td class = "col-sm-2">
+                       {{
+                        "("+clinica.telefone.substring(0,2)+")"+
+                        clinica.telefone.substring(2,6)+"-"+
+                        clinica.telefone.substring(6,10)
+                        }}
+                       </td>
+                       <td class = "col-sm-4">{{clinica.cidade+"("+clinica.uf+")"}}</td>
+                     </tr>
+                  </tbody>
+                </table>
+            </div> 
+            
+            <div class="tabelaInstituicao" ng-show = "tab.isSet(2)">
+                <table class="table table-hover table-responsive">
+                  <thead>
+                    <tr class = "row">
+                      <th class = "col-sm-6"><center>Nome</center></th>
+                      <th class = "col-sm-2"><center>Telefone</center></th>
+                      <th class = "col-sm-4"><center>Cidade</center></th>
+                    </tr>
+                  </thead>   
+                  <tbody>
+                     <tr ng-repeat = "ps in prontoSocorros" class = "row" 
+                         id = "prontoSocorro$index"
+                         ng-click = "selecionarPs($index)"
+                         onmouseover = "this.style.cursor = 'pointer';">
+                       <td class = "col-sm-6">{{ps.nome}}</td>
+                       <td class = "col-sm-2">
+                       {{
+                        "("+ps.telefone.substring(0,2)+")"+
+                        ps.telefone.substring(2,6)+"-"+
+                        ps.telefone.substring(6,10)
+                        }}
+                       </td>
+                       <td class = "col-sm-4">{{ps.cidade+"("+ps.uf+")"}}</td>
+                     </tr>
+                  </tbody>
+                </table>
+            </div>
+          </section>
+        </form>
+    </body>
+</html>
