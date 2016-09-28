@@ -5,12 +5,12 @@
 
     <meta charset="utf-8"/>
 
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
     <link rel="stylesheet" href="../css/barraPadrao.css">    
     <link rel="stylesheet" href="../css/dropdown.css">    
     <script src="../js/jquery.js"></script>
     <script src="../js/jquery.mask.min.js"></script>
-    <script src="../js/bootstrap.js"></script>        
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../js/dropdown.js"></script>
     <script src="../js/angular.min.js"></script>
     <script src="../js/bootbox.min.js"></script>
@@ -67,7 +67,7 @@
                 
                 <div class = "dropdown boxPesquisa">
                   <button class = "btn btn-default dropdown-toggle" data-toggle = "dropdown">
-                    Procurar por clínicas ou pronto socorros
+                    Procurar
                     <span class = "caret"></span>
                   </button>
                   <ul class = "dropdown-menu">
@@ -75,7 +75,7 @@
                     <div class="input-group">
                       <input type="text" class="form-control" placeholder="Procure instituições pelo nome" id = "txtNome">
                       <span class="input-group-btn">
-                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar instituição.">
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar unidades.">
                           <button class="btn btn-default" type="button" ng-click = "pesquisarInstituicaoPorNome()"><span class="glyphicon glyphicon-search"></span></button>
                         </a>
                       </span>
@@ -83,9 +83,9 @@
                    </li>
                    <li>
                      <div class="input-group">
-                       <input type = "text" class="form-control" placeholder="Procure instituições por especialidade" id = "txtEspecialidade">
+                       <input type = "text" class="form-control" placeholder="Procure unidades por especialidade médica" id = "txtEspecialidade">
                        <span class="input-group-btn">
-                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar instituição.">
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar unidades.">
                           <button class="btn btn-default" type="button" ng-click = "pesquisarInstituicaoPorEspecialidade()"><span class="glyphicon glyphicon-search"></span></button>
                         </a>
                       </span>
@@ -93,9 +93,9 @@
                    </li>
                    <li>
                      <div class="input-group">
-                       <input type = "text" class="form-control" placeholder="Procure instituições por convênio" id = "txtConvenio">
+                       <input type = "text" class="form-control" placeholder="Procure unidades por convênio" id = "txtConvenio">
                        <span class="input-group-btn">
-                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar instituição.">
+                        <a href="#" data-toggle="tooltip" data-placement="right" title="Pesquisar unidades.">
                           <button class="btn btn-default" type="button" ng-click = "pesquisarInstituicaoPorConvenio()"><span class="glyphicon glyphicon-search"></span></button>
                         </a>
                       </span>
@@ -109,9 +109,7 @@
                         <span class="glyphicon glyphicon-cog"></span>
                     <span class="caret"></span></button>
                      
-                    <ul class="dropdown-menu">                        
-                        <li><a href="cadastroPaciente.html">Cadastre-se</a></li>                    
-                        <li class="divider"></li>
+                    <ul class="dropdown-menu">                                                                        
                         <li><a href="loginPaciente.html">Sair</a></li>
                     </ul>
                   </div>                

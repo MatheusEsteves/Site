@@ -85,8 +85,7 @@
                 </div>
 
                 <div class="btn-group-vertical campos">
-                    <input type="button" class="btn btn-primary" value="Visualizar médicos" ng-click = "exibirMedicos()"> 
-                    <input type="button" class="btn btn-primary" value="Cadastrar médicos">                    
+                    <input type="button" class="btn btn-primary" value="Visualizar médicos" ng-click = "exibirMedicos()">                 
                 </div>
             </div>
             
@@ -114,14 +113,10 @@
               <span>{{ps.endereco}}</span>
             </div>
             <div class = "form-group">
-              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
-              <span>{{"Latitude: "+ps.latitude+"º, Longitude: "+ps.longitude+"º"}}</span>
-            </div>
-            <div class = "form-group">
               <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
               <ul>
-                <li class = "elemento" ng-repeat = "convenio in convenios">
-                  <a href = "#">{{convenio.nome}}</a>
+                <li ng-repeat = "convenio in convenios">
+                  <span>{{convenio.nome}}</span>
                 </li>
               </ul>
             </div>

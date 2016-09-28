@@ -10,7 +10,7 @@ var app = angular.module("operacoesMedico",["ngStorage"]);
 app.controller("ConexaoBdController",function($http,$scope){
    this.conectarBd = function(){
 	 // Se a conexão for realizada, isConectado = true, caso contrário, isConectado = false.
-     $http.get("http://webservicemedico.cfapps.io/conectarBd").success(function(data){
+     $http.get("http://wsmedico.cfapps.io/conectarBd").success(function(data){
 	    $scope.isConectado = data;
      }).error(function(erro){
         console.log(erro);	 
@@ -33,7 +33,7 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	 // essa senha, ou seja, caso exista algum registro na tabela MedicoClinica tal que a senha seja 
 	 // a mesma que a digitada no formulário de login e o idMedico corresponda ao id de um médico com
 	 // o mesmo CRM digitado no formulário de login.
-     $http.post("http://webservicemedico.cfapps.io/isMedicoClinica",loginMedico).success(function(data){
+     $http.post("http://wsmedico.cfapps.io/isMedicoClinica",loginMedico).success(function(data){
     	 // Após a realização do método isMedicoClinica, na própria Web Service de médicos, os dados do
     	 // médico são armazenados em um objeto.
 	     $scope.isMedicoExistente = data;
@@ -41,7 +41,7 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	     // na variável de sessão $sessionStorage. Armazenamos também os dados do seu login para a sua 
 	     // utilização em outros métodos posteriormente.
 	     if ($scope.isMedicoExistente){
-	       $http.get("http://webservicemedico.cfapps.io/getMedico").success(function(data){
+	       $http.get("http://wsmedico.cfapps.io/getMedico").success(function(data){
 	    	 $sessionStorage.medico = data;
 	    	 $sessionStorage.loginMedico = loginMedico;
 	    	 // Posteriormente, pesquisaremos todas as clínicas relacionadas à esse médico. Como as clínicas
@@ -54,7 +54,7 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	    	 $sessionStorage.isClinicaJaPesquisada = false;
 	       });
 	       // Pesquisamos todas as especialidades nas quais esse determinado médico atua.
-	       $http.get("http://webservicemedico.cfapps.io/getEspecialidades").success(function(data){
+	       $http.get("http://wsmedico.cfapps.io/getEspecialidades").success(function(data){
 	    	 $sessionStorage.especialidades = data;
 	    	 window.location.href = "homeMedico.html";
 	       });
@@ -74,9 +74,9 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 // trabalha para entrar no sistema.
 app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
   // Os dados do médico, bem como suas especialidades, são obtidos da variável de sessão $sessionStorage.
-  $scope.medico = $sessionStorage.medico;
+  $scope.medico         = $sessionStorage.medico;
   $scope.especialidades = $sessionStorage.especialidades;
-  var loginMedico = $sessionStorage.loginMedico;
+  $scope.loginMedico    = $sessionStorage.loginMedico;
   // Caso já tenhamos pesquisado as clínicas no banco de dados, não pesquisaremos novamente ao entrar
   // nessa página, mas sim obteremos elas da variável de sessão $sessionStorage.
   if ($sessionStorage.isClinicaJaPesquisada)
@@ -84,12 +84,20 @@ app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
   else
 	// Caso ainda não tenhamos pesquisado as clínicas no banco de dados (primeira vez que entramos nessa página),
 	// pesquisamos elas no banco de dados e as colocamos na variável de sessão $sessionStorage.
-    $http.post("http://webservicemedico.cfapps.io/getClinicas",loginMedico).success(function(data){
+    $http.get("http://wsmedico.cfapps.io/getClinicas").success(function(data){
       $scope.clinicas = data;
       $sessionStorage.clinicas = data;
       $sessionStorage.isClinicaJaPesquisada = true;
-      $sessionStorage.loginMedico = null;
     });
+    
+  $scope.nomeClinica = "";
+  $scope.pesquisarClinicasPorNome = function(){
+    $http.get("http://wsmedico.cfapps.io/getClinicasPorNome/"+$scope.nomeClinica).success(function(clinicas){
+      $scope.clinicas = clinicas;    
+    }).error(function(erro){
+      console.log(erro);    
+    });
+  };
   
   // Método para exibir os dados do médico logado, que são nome,CRM e especialidades nas quais atua.
   $scope.exibirDadosMedico = function(){
@@ -138,12 +146,12 @@ app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
     	// de médicos, o qual recebe como parâmetro o id da clínica selecionada e com base nisso armazena os dados 
     	// dessa clínica em um objeto no próprio Web Service de médicos.
     	if (result){
-    	  $http.get("http://webservicemedico.cfapps.io/loginMedico/"+clinica.id).success(function(data){
+    	  $http.get("http://wsmedico.cfapps.io/loginMedico/"+clinica.id).success(function(data){
     		// Também armazenamos os dados da clínica selecionada na variável de sessão $sessionStorage.
     	    $sessionStorage.clinica = clinica;
           });
     	  // Obtemos todos os convênios que essa clínica possui e os armazenamos na variável de sessão $sessionStorage.
-    	  $http.get("http://webservicemedico.cfapps.io/getConvenios").success(function(data){
+    	  $http.get("http://wsmedico.cfapps.io/getConvenios").success(function(data){
     	    $sessionStorage.convenios = data;
     	    window.location.href = "visualizaHorario.html";
     	  });
@@ -174,7 +182,8 @@ app.controller("InclusaoHorarioController",function($http,$scope,$filter,$sessio
   
   // Selecionaremos um dia da semana em um dropdown-menu.
   // A variável abaixo armazena o dia da semana selecionado.
-  $scope.diaSemana = "Dia da semana";
+  $scope.diaSemana = "Segunda-feira";
+  $scope.horario.dia = "SEG";
   
   // Ao selecionarmos um dia da semana no dropdown-menu, o método abaixo será chamado, o qual
   // recebe como parâmetro o dia da semana selecionado abreviado (para executarmos o método 
@@ -204,18 +213,22 @@ app.controller("InclusaoHorarioController",function($http,$scope,$filter,$sessio
   
   // Incluímos horários em série no banco de dados com base nos dados armazenados no objeto horario.
   $scope.incluirHorario = function(){
+    // Horário de início das atividades (em segundos).
+    var horaInicio = 
+      horario.horaInicio.getSeconds() +
+      horario.horaInicio.getMinutes()*60+
+      horario.horaInicio.getHours()*3600;
+    // Horário de término das atividades (em segundos).
+    var horaFim = 
+      horario.horaFim.getSeconds()+
+      horario.horaFim.getMinutes()*60+
+      horario.horaFim.getHours()*3600;
+      
+    
 	var horario       = $scope.horario;
 	// Calculamos o tempo que o método ficará trabalhando (em segundos), com base no horário de
 	// início das atividades e no horário de término.
-	var tempoTrabalho = 
-	  // Horário de início das atividades (em segundos).
-	  (horario.horaFim.getSeconds()+
-	   horario.horaFim.getMinutes()*60+
-	   horario.horaFim.getHours()*3600)- 
-	  // Horário de término das atividades (em segundos).
-	  (horario.horaInicio.getSeconds()+
-	   horario.horaInicio.getMinutes()*60+
-	   horario.horaInicio.getHours()*3600);
+	var tempoTrabalho = horaFim - horaInicio;
 	// Calculamos o tempo entre o início de uma consulta o início de outra posterior (em segundos), 
 	// com base na duração de cada consulta (em segundos) e no intervalo entre as consultas (em segundos).
 	var tempoEntreConsultas = 
@@ -243,7 +256,7 @@ app.controller("InclusaoHorarioController",function($http,$scope,$filter,$sessio
 	
 	// Cadastramos os horários efetivamente com base nos dados obtidos.
     $http.get(
-      "http://webservicemedico.cfapps.io/cadastrarHorario/"+
+      "http://wsmedico.cfapps.io/cadastrarHorario/"+
       horario.dia+"/"+
       horario.dataInicio.getFullYear()+"-"+
       (horario.dataInicio.getMonth()+1)+"-"+
@@ -265,7 +278,7 @@ app.controller("InclusaoHorarioController",function($http,$scope,$filter,$sessio
       $("#alertInclusao").show();
       // Após cadastrarmos os horários, atualizamos o vetor de horários no $sessionStorage,
       // para que a tabela de horários seja atualizada automaticamente.
-      $http.get("http://webservicemedico.cfapps.io/getHorarios").success(function(data){
+      $http.get("http://wsmedico.cfapps.io/getHorarios").success(function(data){
         $sessionStorage.horarios = data; 
       });
     }).error(function(data){
@@ -293,10 +306,10 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
   $scope.selecionarDia = function(diaAbreviado,diaSemana){
 	$scope.data = null;
     $scope.diaSemana = diaSemana;
-    $http.get("http://webservicemedico.cfapps.io/getHorariosPorDia/"+diaAbreviado).success(function(data){
+    $http.get("http://wsmedico.cfapps.io/getHorariosPorDia/"+diaAbreviado).success(function(data){
       $scope.horarios = data;
     });
-  }
+  };
  
   // Ao selecionarmos uma data no input date, o método abaixo será chamado, o qual pesquisa todos os horários
   // em determinada data.
@@ -304,14 +317,14 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
 	$scope.diaSemana = "Dia da semana";
 	var data = $scope.data;
     $http.get(
-      "http://webservicemedico.cfapps.io/getHorariosPorData/"+
+      "http://wsmedico.cfapps.io/getHorariosPorData/"+
       data.getFullYear()+"-"+
       (data.getMonth()+1)+"-"+
       data.getDate()
     ).success(function(resultado){
       $scope.horarios = resultado;
     });
-  }
+  };
   
   // Fecha as mensagens auxiliares que indicam quando um registro foi excluído ou alterado com sucesso.
   $scope.fecharAlert = function(){ 
@@ -344,7 +357,7 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
   };
   
   // Pesquisa todos os horários do médico logado e armazena-os na variável de sessão $sessionStorage.
-  $http.get("http://webservicemedico.cfapps.io/getHorarios").success(function(data){
+  $http.get("http://wsmedico.cfapps.io/getHorarios").success(function(data){
     $scope.horarios = data;
     $sessionStorage.horarios = data;
   }).error(function(erro){
@@ -363,7 +376,7 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
     // há uma consulta marcada para o horário selecionado e armazenados os dados do paciente que marcou essa
     // consulta na variável paciente abaixo.
     $scope.paciente = null;
-	$http.get("http://webservicemedico.cfapps.io/getConsulta/"+$scope.horario.id).success(function(consulta){  
+	$http.get("http://wsmedico.cfapps.io/getConsulta/"+$scope.horario.id).success(function(consulta){  
 	  if (consulta != null)
 	    $scope.paciente = consulta.paciente;
 	});
@@ -407,7 +420,7 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
 			  callback:function(result){
 				if (result){
 				  // Excluímos o horário selecionado efetivamente.
-			      $http.get("http://webservicemedico.cfapps.io/excluirHorario/"+$scope.horario.id); 
+			      $http.get("http://wsmedico.cfapps.io/excluirHorario/"+$scope.horario.id); 
 			      $scope.horarios.splice(indice,1);
 				  $sessionStorage.horarios = $scope.horarios;
 				  $("#alertExclusao").show(); 
@@ -449,7 +462,7 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
 			        $scope.horario = horarioAlterado;
 			        // Alteramos o horário e atualizamos ele no vetor de horários armazenado, que por conta do atributo
 			        // ng-repeat do Angular, fará atualizar automaticamente a tabela de horários.
-	                $http.post("http://webservicemedico.cfapps.io/alterarHorario",$scope.horario).success(function(){
+	                $http.post("http://wsmedico.cfapps.io/alterarHorario",$scope.horario).success(function(){
 	                  $scope.horarios[indice] = $scope.horario;
 		              $sessionStorage.horarios = $scope.horarios;
 		              $("#alertAlteracao").show();	

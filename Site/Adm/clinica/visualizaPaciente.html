@@ -5,16 +5,16 @@
 
     <meta charset="utf-8"/>
 
-    <link rel="stylesheet" href="../../css/bootstrap.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../css/barraPadrao.css">    
     <link rel="stylesheet" href="../../css/cadastroMedico.css">   
-    <script src="../../js/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../../js/jquery.mask.min.js"></script>
-    <script src="../../js/bootstrap.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../../js/angular.min.js"></script>
     <script src="../../js/bootbox.min.js"></script>
     <script src="../../js/ngStorage.min.js"></script>
-    <script src="../../js/operacoesAdministrador.js"></script>
+    <script src="../../js/operacoesAdministrador.js"></script>            
     
     <script>
       function selecionarMedico(parametros){
@@ -136,9 +136,9 @@
               </span> 
                 
               <div class="input-group boxPesquisa">
-                  <input type="text" class="form-control" placeholder="Procure pacientes pelo nome">
+                  <input type="text" class="form-control" id = "txtPaciente" placeholder="Procure pacientes pelo nome">
                   <span class="input-group-btn">
-                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                    <button class="btn btn-default" type="button" ng-click = "pesquisarPacientesPorNome()"><span class="glyphicon glyphicon-search"></span></button>
                   </span>
               </div> 
                 
@@ -190,11 +190,14 @@
                       paciente.telefone.substring(6,10)
                     }}
                     </td> 
-                    <td class = "col-sm-2">
-                    {{
-                      "("+paciente.celular.substring(0,2)+")"+
-                      paciente.telefone.substring(2,7)+"-"+
-                      paciente.telefone.substring(7,11)
+                      
+                    <td ng-if="paciente.celular == ''" class = "col-sm-2"/>
+                    
+                    <td ng-if="paciente.celular != '' " class = "col-sm-2">    
+                    {{                       
+                         "("+paciente.celular.substring(0,2)+")"+
+                          paciente.celular.substring(2,7)+"-"+
+                          paciente.celular.substring(7,11)                                                                         
                     }}
                     </td>
                    <td class = "col-sm-3">{{paciente.cidade+"("+paciente.uf+")"}}</td> 
@@ -227,14 +230,10 @@
               <span>{{clinica.endereco}}</span>
             </div>
             <div class = "form-group">
-              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
-              <span>{{"Latitude: "+clinica.latitude+"º, Longitude: "+clinica.longitude+"º"}}</span>
-            </div>
-            <div class = "form-group">
               <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
               <ul>
-                <li class = "elemento" ng-repeat = "convenio in convenios">
-                  <a href = "#">{{convenio.nome}}</a>
+                <li ng-repeat = "convenio in convenios">
+                  <span>{{convenio.nome}}</span>
                 </li>
               </ul>
             </div>
@@ -272,8 +271,8 @@
                  paciente.telefone.substring(6,10)
                 }}
               </span><br>
-              <label>Celular: </label>
-              <span>
+              <label ng-show="paciente.celular">Celular: </label>
+              <span ng-show="paciente.celular">
                 {{
                  "("+paciente.celular.substring(0,2)+")"+
                  paciente.celular.substring(2,7)+"-"+

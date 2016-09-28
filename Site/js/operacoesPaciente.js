@@ -10,7 +10,7 @@ var app = angular.module("operacoesPaciente",["ngStorage"]);
 app.controller("ConexaoBdController",function($http,$scope){
    this.conectarBd = function(){
 	 // Se a conexão for realizada, isConectado = true, caso contrário, isConectado = false.
-	 $http.get("http://webservicepaciente.cfapps.io/conectarBd").
+	 $http.get("http://wspaciente.cfapps.io/conectarBd").
 	   success(function(data){
 		 $scope.isConectado = data;
 	   });
@@ -40,11 +40,11 @@ app.controller("LoginPacienteController",function($http,$scope,$sessionStorage){
 	 
 	 // Método que verifica se existe paciente cadastrado com esse cpf e essa senha. Caso exista,
 	 // seus dados serão armazenados em um objeto de Paciente no próprio web service de pacientes.
-     $http.post("http://webservicepaciente.cfapps.io/loginPaciente",paciente).success(function(data){
+     $http.post("http://wspaciente.cfapps.io/loginPaciente",paciente).success(function(data){
 	     $scope.isPacienteExistente = data;
 	     if ($scope.isPacienteExistente){
 	       // Retorna o paciente logado e armazena seus dados na variável de sessão $sessionStorage.
-	       $http.get("http://webservicepaciente.cfapps.io/getPaciente").success(function(data){
+	       $http.get("http://wspaciente.cfapps.io/getPaciente").success(function(data){
 	    	 data.senha = "";
 	         $sessionStorage.paciente = data;
 	         // Posteriormente, pesquisaremos todas os hospitais cadastrados no sistema. Como esses hospitais
@@ -120,11 +120,11 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
   $scope.pesquisarInstituicaoPorNome = function(){
     var nome = $("#txtNome").val();
     // Primeiro buscamos as clínicas.
-    $http.get("http://webservicepaciente.cfapps.io/getClinicasPorNome/"+
+    $http.get("http://wspaciente.cfapps.io/getClinicasPorNome/"+
     		   nome+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
       if (data.length == 0)
     	// Depois buscamos os pronto socorros.
-        $http.get("http://webservicepaciente.cfapps.io/getProntoSocorrosPorNome/"+
+        $http.get("http://wspaciente.cfapps.io/getProntoSocorrosPorNome/"+
        		      nome+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
        	  if (data.length != 0)
        	    $scope.centralizarLocal(data);
@@ -139,11 +139,11 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
   $scope.pesquisarInstituicaoPorEspecialidade = function(){
     var especialidade = $("#txtEspecialidade").val();
     // Primeiro buscamos as clínicas.
-	$http.get("http://webservicepaciente.cfapps.io/getClinicasPorEspecialidade/"+
+	$http.get("http://wspaciente.cfapps.io/getClinicasPorEspecialidade/"+
 	    	  especialidade+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
 	  if (data.length == 0)
 		// Depois buscamos os pronto socorros.
-	    $http.get("http://webservicepaciente.cfapps.io/getProntoSocorrosPorEspecialidade/"+
+	    $http.get("http://wspaciente.cfapps.io/getProntoSocorrosPorEspecialidade/"+
 	       		  especialidade+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
 	      if (data.length != 0)
 	        $scope.centralizarLocal(data);
@@ -158,11 +158,11 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
   $scope.pesquisarInstituicaoPorConvenio = function(){
     var convenio = $("#txtConvenio").val();
     // Primeiro buscamos as clínicas.
-    $http.get("http://webservicepaciente.cfapps.io/getClinicasPorConvenio/"+
+    $http.get("http://wspaciente.cfapps.io/getClinicasPorConvenio/"+
 		      convenio+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
       if (data.length == 0)
     	// Depois buscamos os pronto socorros.
-	    $http.get("http://webservicepaciente.cfapps.io/getProntoSocorrosPorConvenio/"+
+	    $http.get("http://wspaciente.cfapps.io/getProntoSocorrosPorConvenio/"+
 		       	  convenio+"/"+$sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
 		  if (data.length != 0)
 		    $scope.centralizarLocal(data);
@@ -187,11 +187,13 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 	    center:new google.maps.LatLng($sessionStorage.latReferencia,$sessionStorage.lonReferencia),
 		zoom: 16,
         mapTypeId: google.maps.MapTypeId.ROADMAP	  
-	  };
+	  };     
+        
+        
 	  // Cria o mapa do google maps com base na configuração criada anteriormente e no local onde
 	  // ele será exibido (mapaHospitais).
-	  $scope.map = new google.maps.Map(document.getElementById("mapaHospitais"),mapProp);
-	  
+	  $scope.map = new google.maps.Map(document.getElementById("mapaHospitais"),mapProp);	        
+        
 	  // Caso já tenhamos pesquisado os hospitais no banco de dados, não pesquisaremos novamente ao entrar
 	  // nessa página, mas sim obteremos eles da variável de sessão $sessionStorage.
 	  if ($sessionStorage.isHospitalJaPesquisado){
@@ -202,7 +204,7 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		// Caso ainda não tenhamos pesquisado os hospitais no banco de dados (primeira vez que entramos nessa página),
 	    // pesquisamos eles no banco de dados e os colocamos na variável de sessão $sessionStorage.
 		$http.get(
-		  "http://webservicepaciente.cfapps.io/getClinicas/"+
+		  "http://wspaciente.cfapps.io/getClinicas/"+
 		  $sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
 		    $sessionStorage.clinicas = data;
 		    $scope.clinicas = data;
@@ -210,7 +212,7 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		  console.log(data);	
 		});
 		$http.get(
-		  "http://webservicepaciente.cfapps.io/getProntoSocorros/"+
+		  "http://wspaciente.cfapps.io/getProntoSocorros/"+
 		  $sessionStorage.latReferencia+"/"+$sessionStorage.lonReferencia).success(function(data){
 		    $sessionStorage.prontoSocorros = data;
 		    $scope.prontoSocorros = data;
@@ -237,6 +239,8 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // Adicionamos um título para o marcador, que será igual ao nome dessa clínica.
 		   title    : clinica.nome
 		 });
+          
+          
 		 // Adicionamos um evento onclick para esse marcador já criado.
 		 google.maps.event.addListener(marker,'click',function(){
 		   // Ao clicarmos no marcador dessa clínica determinada, o zoom do mapa irá aumentar e a centralização
@@ -247,13 +251,13 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // obtemos o objeto dessa clínica com base em seu nome, que foi armazenado no título do marcador.
 		   $sessionStorage.clinica = $scope.getClinica(this.getTitle());
 		   // Pesquisamos todos os convênios que essa clínica possui, com base no id da clínica selecionada.
-		   $http.get("http://webservicepaciente.cfapps.io/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(data){
+		   $http.get("http://wspaciente.cfapps.io/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(data){
 		     $sessionStorage.convenios = data;
 		   }).error(function(data){
 			 console.log(data);   
 		   });
 		   // Pesquisamos todas as especialidades que essa clínica possui.
-		   $http.get("http://webservicepaciente.cfapps.io/getEspecialidadesPorClinica/"+
+		   $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorClinica/"+
 		              $sessionStorage.clinica.nome).success(function(data){
 		      $sessionStorage.especialidades = data;
 		      // Entramos na área da clínica selecionada.
@@ -300,13 +304,13 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // obtemos o objeto desse pronto socorro com base em seu nome, que foi armazenado no título do marcador.
 		   $sessionStorage.ps = $scope.getPs(this.getTitle());
 		   // Pesquisamos todos os convênios que esse pronto socorro possui, com base no id do pronto socorro selecionado.
-		   $http.get("http://webservicepaciente.cfapps.io/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(data){
+		   $http.get("http://wspaciente.cfapps.io/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(data){
 		     $sessionStorage.convenios = data; 
 		   }).error(function(data){
 		     console.log(data);   
 		   });
 		   // Pesquisamos todas as especialidades que esse pronto socorro possui.
-		   $http.get("http://webservicepaciente.cfapps.io/getEspecialidadesPorPs/"+
+		   $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorPs/"+
 		              $sessionStorage.ps.nome).success(function(data){
 		      $sessionStorage.especialidades = data;
 		      window.location.href = "areaEspecialidadePs.html";
@@ -323,10 +327,14 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   infowindow.open($scope.map,this);
 		 });
 	  }
-	}); 
+	});                        
+	
   };
   // Faz o mapa ser inicializado de fato no evento onload da página.
   google.maps.event.addDomListener(window,'load',$scope.inicializarMapa);
+    
+  $scope.inicializarMapa();  
+    
 });
 
 app.controller("DadosMedicosController",function($http,$scope,$sessionStorage){
@@ -349,7 +357,7 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
   $scope.pesquisarEspecialidade = function(){
     var nome = $("#txtEspecialidade").val();
     if (nome != "")
-      $http.get("http://webservicepaciente.cfapps.io/getEspecialidadesPorNomeClinica/"+nome+"/"+$scope.clinica.nome).success(function(data){
+      $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorNomeClinica/"+nome+"/"+$scope.clinica.nome).success(function(data){
         $scope.especialidades = data;	
       }).error(function(data){
         console.log(data);	
@@ -369,7 +377,7 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
 	// por meio da variável indice, que é o número da linha selecionada na tabela de especialidades.
 	$scope.especialidade = $scope.especialidades[indice];
 	// Pesquisa todos os médicos dessa clínica que trabalham na especialidade selecionada.
-	$http.get("http://webservicepaciente.cfapps.io/getMedicosPorEspecialidadeClinica/"+
+	$http.get("http://wspaciente.cfapps.io/getMedicosPorEspecialidadeClinica/"+
 			  $scope.especialidade.nome+"/"+$scope.clinica.nome).success(function(data){
 	  // Armazena esses medicos na variável de sessão para serem exibidos na próxima página.
 	  $sessionStorage.medicos = data;
@@ -459,12 +467,12 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
   $scope.paciente = $sessionStorage.paciente;
   // Obtém o crm do médico selecionado anteriormente através da URL.
   var crm = window.location.search.slice(5);
-  $http.get("http://webservicepaciente.cfapps.io/getMedicoPorCrm/"+crm).success(function(data){
+  $http.get("http://wspaciente.cfapps.io/getMedicoPorCrm/"+crm).success(function(data){
 	// Obtém o objeto do médico cujo crm é o obtido anteriormente e armazena esses dados no $sessionStorage.
 	$scope.medico = data;
 	$sessionStorage.medico = data;
 	// Obtém as especialidades em que esse médico trabalha e armazena-as no $sessionStorage.
-	$http.get("http://webservicepaciente.cfapps.io/getEspecialidades/"+$scope.medico.id).success(function(data){
+	$http.get("http://wspaciente.cfapps.io/getEspecialidades/"+$scope.medico.id).success(function(data){
 	  $scope.especialidadesMedico = data;	
 	  $sessionStorage.especialidadesMedico = data;
 	}).error(function(data){
@@ -484,7 +492,7 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
   // determinada clínica, nessa determinada data. A tabela de consultas é atualizada automaticamente
   // por conta to atributo ng-repeat.
   $scope.pesquisarConsulta = function(){
-    $http.get("http://webservicepaciente.cfapps.io/getConsultasPorDataMedicoClinica/"+
+    $http.get("http://wspaciente.cfapps.io/getConsultasPorDataMedicoClinica/"+
     		  $scope.data.getFullYear()+"-"+
     	      ($scope.data.getMonth()+1)+"-"+
     	      $scope.data.getDate()+"/"+
@@ -498,7 +506,7 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
   // Pesquisamos todas as consultas que esse paciente possui com esse médico, nessa clínica. A tabela de
   // consultas é atualizada automaticamente por conta do atributo ng-repeat.
   $scope.exibirTodas = function(){
-	$http.get("http://webservicepaciente.cfapps.io/getConsultasPorMedicoClinica/"+
+	$http.get("http://wspaciente.cfapps.io/getConsultasPorMedicoClinica/"+
     		  $scope.medico.id+"/"+$scope.clinica.id).success(function(data){
       $scope.consultas = data;
     }).error(function(data){
@@ -655,7 +663,7 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 	            	// Cancelamos a consulta excluindo seu registro no banco de dados e excluimos também a consulta 
 	                // do vetor de consultas armazenado no cliente, atualizando automaticamente a tabela de consultas
 	            	// por conta do atributo ng-repeat do Angular.
-	                $http.get("http://webservicepaciente.cfapps.io/cancelarConsulta/"+$scope.consulta.id).success(function(data){
+	                $http.get("http://wspaciente.cfapps.io/cancelarConsulta/"+$scope.consulta.id).success(function(data){
 	                  $scope.consultas.splice(indice,1);
 	                  $("#alertExclusaoConsulta").show();	
 	                }).error(function(data){
@@ -690,7 +698,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
   $scope.especialidadesMedico = $sessionStorage.especialidadesMedico;
   
   // Pesquisamos todos os horários livres desse determinado médico, nessa determinado clinica.
-  $http.get("http://webservicepaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
+  $http.get("http://wspaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
 		    $scope.consulta.horario.medico.id+"/"+$scope.consulta.horario.clinica.id).success(function(data){
 	// Os horários livres são atualizados na tabela de horários livres automaticamente por conta do atributo
 	// ng-repeat do Angular e também são armazenados no $sessionStorage.
@@ -706,7 +714,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
   // Pesquisamos todos os horários livres desse determinado médico, nessa determinada clínica, 
   // nessa determinada data. A tabela de horários livres é atualizada automaticamente por conta to atributo ng-repeat.
   $scope.pesquisarHorario = function(){
-    $http.get("http://webservicepaciente.cfapps.io/getHorariosLivresPorDataMedicoClinica/"+
+    $http.get("http://wspaciente.cfapps.io/getHorariosLivresPorDataMedicoClinica/"+
     		  $scope.data.getFullYear()+"-"+
     	      ($scope.data.getMonth()+1)+"-"+
     	      $scope.data.getDate()+"/"+
@@ -752,7 +760,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
     $scope.horario = $scope.horarios[indice];
     // Verificamos se o paciente possui alguma consulta com outro médico ou em outra clínica, nessa
     // mesma data e por volta desse mesmo período.
-    $http.post("http://webservicepaciente.cfapps.io/getConsultasPorHorario",$scope.horario).success(function(data){
+    $http.post("http://wspaciente.cfapps.io/getConsultasPorHorario",$scope.horario).success(function(data){
       if (data.length > 0){
     	// Caso ele já possua essa consulta, os seus dados são informados e não deixamos ele reagendar
     	// uma consulta nesse horário.
@@ -784,7 +792,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
            		$scope.consulta.horario = $scope.horario;
            		$sessionStorage.consulta = $scope.consulta;
            		$scope.consulta.paciente.senha = "senha";
-           	    $http.post("http://webservicepaciente.cfapps.io/alterarConsulta",$scope.consulta).success(function(data){
+           	    $http.post("http://wspaciente.cfapps.io/alterarConsulta",$scope.consulta).success(function(data){
        	    	  $scope.horarios.splice(indice,1);
        			  $sessionStorage.horarios = $scope.horarios;
        			  $("#alertAlteracaoConsulta").show();
@@ -818,7 +826,7 @@ app.controller("AreaEspecialidadePsController",function($http,$scope,$sessionSto
   $scope.pesquisarEspecialidade = function(){
     var nome = $("#txtEspecialidade").val();
     if (nome != "")
-	  $http.get("http://webservicepaciente.cfapps.io/getEspecialidadesPorNomePs/"+nome+"/"+$scope.prontoSocorro.nome).success(function(data){
+	  $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorNomePs/"+nome+"/"+$scope.prontoSocorro.nome).success(function(data){
 	    $scope.especialidades = data;
 	  }).error(function(data){
 	    console.log(data);	
@@ -856,7 +864,7 @@ app.controller("AreaEspecialidadePsController",function($http,$scope,$sessionSto
     // Ao selecionar determinada especialidade, pesquisamos todos os médicos de plantão nesse
     // pronto socorro que trabalham nessa especialidade. Exibimos esses médicos em uma tabela, a
     // qual é atualizada por conta do atributo ng-repeat do Angular.
-    $http.get("http://webservicepaciente.cfapps.io/getMedicosPlantaoPorEspecialidadePs/"+
+    $http.get("http://wspaciente.cfapps.io/getMedicosPlantaoPorEspecialidadePs/"+
 			  $scope.especialidade.id+"/"+$scope.prontoSocorro.id).success(function(data){
 	  $sessionStorage.medicos = data;
 	  
@@ -923,7 +931,7 @@ app.controller("HorariosLivresController",function($http,$scope,$sessionStorage,
   $scope.especialidadesMedico = $sessionStorage.especialidadesMedico;
  
   // Pesquisamos todos os horários livres que esse médico possui nessa clínica.
-  $http.get("http://webservicepaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
+  $http.get("http://wspaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
 		    $scope.medico.id+"/"+$scope.clinica.id).success(function(data){
 	// Os horários livres são atualizados automaticamente na tabela de horários livres por
 	// conta do atributo ng-repeat do Angular. Eles também são atualizados no $sessionStorage.
@@ -939,7 +947,7 @@ app.controller("HorariosLivresController",function($http,$scope,$sessionStorage,
   // Pesquisamos todos os horários livres desse determinado médico, nessa determinada clínica, 
   // nessa determinada data. A tabela de consultas é atualizada automaticamente por conta to atributo ng-repeat.
   $scope.pesquisarHorario = function(){
-    $http.get("http://webservicepaciente.cfapps.io/getHorariosLivresPorDataMedicoClinica/"+
+    $http.get("http://wspaciente.cfapps.io/getHorariosLivresPorDataMedicoClinica/"+
     		  $scope.data.getFullYear()+"-"+
     	      ($scope.data.getMonth()+1)+"-"+
     	      $scope.data.getDate()+"/"+
@@ -988,7 +996,7 @@ app.controller("HorariosLivresController",function($http,$scope,$sessionStorage,
 	
 	// Verificamos se o paciente logado possui alguma consulta já agendada com outro médico ou em outra
 	// clínica na mesma data e por volta do mesmo período.
-	$http.post("http://webservicepaciente.cfapps.io/getConsultasPorHorario",$scope.horario).success(function(data){
+	$http.post("http://wspaciente.cfapps.io/getConsultasPorHorario",$scope.horario).success(function(data){
       if (data.length > 0){
     	// Caso tenha essa consulta, os seus dados são exibidos: dados da clínica, dados do médico, 
     	// dados paciente e dados do horário e a página de agendamento não é liberada.
@@ -1028,7 +1036,7 @@ app.controller("HorariosLivresController",function($http,$scope,$sessionStorage,
 	            // de horários livres no cliente. A tabela de horários livres é atualizada automaticamente
 	            // por conta do atributo ng-repeat do Angular. Também atualizamos esses horários livres 
 	            // na variável de sessão $sessionStorage.
-	         	$http.put("http://webservicepaciente.cfapps.io/agendarConsulta",consulta).success(function(data){
+	         	$http.put("http://wspaciente.cfapps.io/agendarConsulta",consulta).success(function(data){
 	         	  $scope.horarios.splice(indice,1);
 	              $sessionStorage.horarios = $scope.horarios;
 	         	  $("#alertInclusaoConsulta").show();
@@ -1074,21 +1082,38 @@ app.controller("CadastroPacienteController",function($http,$scope){
   // Informações à parte, que irão compor o endereço posteriormente.
   $scope.logradouro = "";
   $scope.numero = "";
+  $scope.cpf = "";
+  $scope.celular = "";
+  $scope.telefone = "";
   
   // Indica se o cep digitado corresponde à um cep existente ou não.
   $scope.isCepValido = false;
   // Pesquisa um endereço no site viacep com base em um número de cep.
   $scope.pesquisarEndereco = function(){
-	if ($scope.paciente.cep != "")
+	if ($scope.paciente.cep.length == 9 && $scope.paciente.cep != "")
 	  // O site viacep retorna um objeto no formato json com base no cep fornecido como parâmetro.
       $http.get('http://viacep.com.br/ws/'+$scope.paciente.cep+'/json/').success(function(endereco){
-    	$("#campoNaoLocalizado").hide();
-    	$scope.isCepValido = true;
-    	// Obtemos os dados essenciais a partir do endereço obtido, como rua, bairro, cidade e sigla do estado.
-        $scope.paciente.bairro = endereco.bairro;     // Nome do bairro
-        $scope.paciente.cidade = endereco.localidade; // Nome da cidade
-        $scope.paciente.uf     = endereco.uf;         // Sigla do estado
-        $scope.logradouro      = endereco.logradouro; // Nome da rua
+          if(!endereco.erro)
+          {
+            $("#campoNaoLocalizado").hide();
+            $scope.isCepValido = true;
+            // Obtemos os dados essenciais a partir do endereço obtido, como rua, bairro, cidade e sigla do estado.
+            $scope.paciente.bairro = endereco.bairro;     // Nome do bairro
+            $scope.paciente.cidade = endereco.localidade; // Nome da cidade
+            $scope.paciente.uf     = endereco.uf;         // Sigla do estado
+            $scope.logradouro      = endereco.logradouro; // Nome da rua  
+            document.getElementById("txtNumero").focus();
+          }
+          else
+              {
+                  $scope.isCepValido = false;
+                  $("#campoNaoLocalizado").show();
+                  $scope.paciente.bairro = "";
+                  $scope.paciente.cidade = "";
+                  $scope.paciente.uf = "";
+                  $scope.logradouro = "";
+              }
+    
       }).error(function(data){
     	// Não achamos nenhum endereço com base nesse cep, logo ele não existe e portanto exibimos uma
     	// mensagem para avisar o usuário.
@@ -1104,14 +1129,14 @@ app.controller("CadastroPacienteController",function($http,$scope){
   $scope.isCpfExistente = false;
   // Verificamos se já existe algum paciente cadastrado com o cpf digitado.
   $scope.pesquisarCpf = function(){
-	var cpf = $scope.paciente.cpf;
+	var cpf = $scope.cpf;
     if (cpf.length == 14){
       // No formulário, o cpf está formatado com ponto(.) e traço(-). Devemos retirá-los
       // para enviar o cpf como parâmetro no método getIdPaciente.
       cpf = cpf.replace(".","").replace(".","").replace("-","");
       // Pesquisamos o id do paciente cujo cpf é igual ao informado pelo parâmetro. Caso método retorne 0,
       // significa que não há paciente com cpf igual ao do parâmetro.
-      $http.get("http://webservicepaciente.cfapps.io/getIdPaciente/"+cpf).success(function(idPaciente){
+      $http.get("http://wspaciente.cfapps.io/getIdPaciente/"+cpf).success(function(idPaciente){
         if (idPaciente != 0){
           $("#cpfExistente").show();
           $scope.isCpfExistente = true;
@@ -1137,9 +1162,9 @@ app.controller("CadastroPacienteController",function($http,$scope){
    if (!$scope.isCpfExistente && $scope.isCepValido){
 	// Devemos formatar o cpf, o celular e o telefone para que não contenha ponto, parenteses, traços ou espaços em branco
 	// no momento de enviar como parâmetro para o método incluirPaciente do web service de pacientes.
-    $scope.paciente.cpf = $scope.paciente.cpf.replace(".","").replace(".","").replace("-","");
-    $scope.paciente.telefone = $scope.paciente.telefone.replace("-","").replace("(","").replace(")","").replace(" ","");
-    $scope.paciente.celular = $scope.paciente.celular.replace("-","").replace("(","").replace(")","").replace(" ","");
+    $scope.paciente.cpf = $scope.cpf.replace(".","").replace(".","").replace("-","");
+    $scope.paciente.telefone = $scope.telefone.replace("-","").replace("(","").replace(")","").replace(" ","");
+    $scope.paciente.celular = $scope.celular.replace("-","").replace("(","").replace(")","").replace(" ","");
     
     var dataNascimento = $("#txtDataNascimento").val();
     // Montamos o endereço do paciente com base nos dados obtidos com o cep na busca por endereço no site viacep.
@@ -1148,7 +1173,7 @@ app.controller("CadastroPacienteController",function($http,$scope){
     $scope.paciente.endereco = endereco;
     
     // Cadastramos o paciente de fato no banco de dados, com base no objeto formado.
-    $http.put("http://webservicepaciente.cfapps.io/incluirPaciente",$scope.paciente).success(function(data){
+    $http.put("http://wspaciente.cfapps.io/incluirPaciente",$scope.paciente).success(function(data){
       bootbox.dialog({
        	 message:"O seu cadastro foi realizado com sucesso. Clique em prosseguir abaixo para a realização do login",
        	 buttons:{

@@ -5,17 +5,18 @@
 
     <meta charset="utf-8"/>
 
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
     <link rel="stylesheet" href="../css/barraPadrao.css">    
     <link rel="stylesheet" href="../css/cadastroMedico.css">   
-    <script src="../js/jquery.js"></script>
-    <script src="../js/bootstrap.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../js/jquery.mask.min.js"></script>
     <script src="../js/angular.min.js"></script>
     <script src="../js/ngStorage.min.js"></script>
     <script src="../js/bootbox.min.js"></script>
     <script src="../js/operacoesAdministrador.js"></script>
-
+    
+        
         <title>Home - Administrador</title>
     </head>    
     
@@ -69,9 +70,9 @@
             <span class="nome">{{usuario}}</span>  
                 
             <div class="input-group boxPesquisa">
-              <input type="text" class="form-control" placeholder="Procure instituições pelo nome">
+              <input type="text" class="form-control" ng-model="nomeInstituicao" placeholder="Procure instituições pelo nome">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                <button class="btn btn-default" type="button" ng-click="pesquisarInstituicaoPorNome()"><span class="glyphicon glyphicon-search"></span></button>
               </span>
             </div> 
         

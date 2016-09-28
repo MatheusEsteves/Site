@@ -1,25 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html ng-app = "operacoesAdministrador">
 
     <head>    
 
     <meta charset="utf-8"/>
-    <script src="../js/jquery.js"></script>
-    <script src="../js/jquery.mask.min.js"></script>
-    <script src="../js/bootstrap.js"></script>
-    <link rel="stylesheet" href="../css/bootstrap.css">
+                   
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/barraPadrao.css">    
-    <link rel="stylesheet" href="../css/cadastroMedico.css">       
-
+    <link rel="stylesheet" href="../css/cadastroMedico.css">   
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../js/angular.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <script src="../js/ngStorage.min.js"></script>
+    <script src="../js/operacoesAdministrador.js"></script>
+    
     <title>Visualização de paciente</title>
+        
+    <style>
+        .menuButton{
+            width: 40px;
+            position: absolute;
+            top: 35px;
+            right: 20px;
+        }                
+    </style>    
+        
     </head>    
     
     <body>
-        <form>
+        <form ng-controller = "CadastrarMedicoController as addMedicoCtrl">
             <div class="topo">
                 <img src="../img/icone.png" class="logo"/>
                             
-                <span class="nome">Clínica: Sacramento </span> 
+                <span class="nome">{{clinica.nome}}</span> 
 
                 
                  <div class="menuButton">
@@ -34,33 +50,30 @@
 
                     <div class="form-group">
                       <label for="txtCrm">CRM:</label>
-                      <input type="text" class="form-control" id="txtCrm" placeholder="CRM">
+                      <input type="text" class="form-control" id="txtCrm" ng-model = "medico.crm" placeholder="CRM">
                     </div>
 
                     <div class="form-group">
                       <label for="txtNome">Nome:</label>
-                      <input type="text" class="form-control" id="txtNome" placeholder="Nome">
+                      <input type="text" class="form-control" id="txtNome" ng-model = "medico.nome" placeholder="Nome">
                     </div>
 
                     <div class="form-group">
                       <label for="txtSenha">Senha:</label>
-                      <input type="password" class="form-control" id="txtSenha" placeholder="Digite sua senha">
+                      <input type="password" class="form-control" id="txtSenha" ng-model = "senha" placeholder="Digite sua senha">
                     </div>
 
 
-                     <div class="form-group">
-                        <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Estado                          
-                          <span class="caret"></span></button>
-                          <ul class="dropdown-menu">
-                            <li><a href="#">São Paulo</a></li>                           
-                            <li><a href="#">Riode Janeiro</a></li>
-                            <li><a href="#">Bahia</a></li>
-                          </ul>
-                        </div>
+                     <div class="form-group">                         
+                         <div>                            
+                             <label for="slcEstado">Estado:</label>
+                             <select  id="slcEstado" class = "btn btn-default dropdown-toggle" ng-model = "medico.uf">
+                                <option ng-repeat="estado in estados | orderBy:'nome'" value="{{estado.sigla}}">{{estado.nome}}</option>                               
+                             </select>                                                      
+                         </div>                        
                     </div>
                     
-                    <input type="button" class="btn btn-primary" value="Consultas">            
+                    <input type="button" class="btn btn-primary" value="Cadastrar" ng-click="cadastrarMedico()">            
                 </div>
             </div>
         

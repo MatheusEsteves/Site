@@ -2,11 +2,11 @@
 <html ng-app = "operacoesPaciente">
   <head>    
     <meta charset="utf-8"/>
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
     <link rel="stylesheet" href="../css/barraPadrao.css">
     <script src="../js/jquery.js"></script>
     <script src="../js/jquery.mask.min.js"></script>
-    <script src="../js/bootstrap.js"></script>        
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../js/angular.min.js"></script>
     <script src="../js/bootbox.min.js"></script>
     <script src="../js/ngStorage.min.js"></script>
@@ -169,8 +169,8 @@
               <div class = "form-group">
                 <label style = 'font-family:Arial;font-size:16px;'>Especialidades</label><br>
                 <ul>
-                  <li class = "elemento" ng-repeat = "especialidade in especialidadesMedico">
-                    <a href = "#">{{especialidade.nome}}</a>
+                  <li ng-repeat = "especialidade in especialidadesMedico">
+                    <span>{{especialidade.nome}}</span>
                   </li>
                 </ul>
               </div>

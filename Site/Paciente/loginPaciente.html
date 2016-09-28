@@ -3,19 +3,23 @@
   <head>
     <meta charset="utf-8"/>
     <title>Login de paciente</title>
-    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">      
     <link rel="stylesheet" href="../css/footer.css" media="screen and (min-width: 374px)">     
     <link rel="stylesheet" href="../css/footerMin.css" media="screen and (max-width: 373px)">
     <link rel="stylesheet" href="../css/loginPadrao.css">
 	<script src = "../js/jquery.js"></script>
 	<script src = "../js/jquery.mask.min.js"></script>
-	<script src = "../js/bootstrap.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src = "../js/angular.min.js"></script>
 	<script src = "../js/bootbox.min.js"></script>
 	<script src = "../js/ngStorage.min.js"></script>
 	<script src = "../js/operacoesPaciente.js"></script>
   </head>
   
+    <style>
+        a#EsqueciSenha{top: 0px;}
+   
+    </style>
   <body ng-controller = "ConexaoBdController as conexaoBdCtrl"
         ng-init = "conexaoBdCtrl.conectarBd()">  
     <form role="form" 
@@ -25,9 +29,9 @@
        <div class="topo">
           <span class="mf">Médico Fácil</span>
           <span class="titulo">Paciente</span>
-       </div>
-            
-       <div class="form-group campos">     
+       </div>               
+        
+       <div class="form-group campos">                
          <div class="form-group">
            <label for="txtCpf">CPF:</label>
            <input type="text" ng-model = "loginPacienteCtrl.paciente.cpf" class="form-control" id="txtCpf" placeholder="Digite seu CPF" required>
@@ -37,9 +41,11 @@
            <label for="txtSenha">Senha:</label>
            <input type="password" ng-model = "loginPacienteCtrl.paciente.senha" class="form-control" id="txtSenha" placeholder="Digite sua senha" required>
          </div>
-                
+           
+        <div class="form-group">
          <input type="submit" class="btn btn-primary" ng-click = "loginPacienteCtrl.loginPaciente()" value="Entrar">
-         <a id="EsqueciSenha">Esqueci minha senha.</a>
+         <a href="cadastroPaciente.html" id="cadastro">Cadastre-se</a> <a id="EsqueciSenha">Esqueci minha senha.</a>
+       </div>                    
        </div>
     </form>
         

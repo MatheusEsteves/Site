@@ -87,9 +87,9 @@
                 </span> 
                 
                 <div class="input-group boxPesquisa">
-                  <input type="text" class="form-control" placeholder="Procure médicos pelo nome">
+                  <input type="text" class="form-control" ng-model = "nomeMedico" placeholder="Procure médicos pelo nome">
                   <span class="input-group-btn">
-                    <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                    <button class="btn btn-default" type="button" ng-click = "pesquisarMedicosPorNome()"><span class="glyphicon glyphicon-search"></span></button>
                   </span>
                 </div> 
                 
@@ -177,8 +177,8 @@
               <div class = "form-group">
                 <label style = 'font-family:Arial;font-size:16px;'>Especialidades</label><br>
                 <ul>
-                  <li class = "elemento" ng-repeat = "especialidade in especialidadesMedico">
-                    <a href = "#">{{especialidade.nome}}</a>
+                  <li ng-repeat = "especialidade in especialidadesMedico">
+                    <span>{{especialidade.nome}}</span>
                   </li>
                 </ul>
               </div>
@@ -208,14 +208,10 @@
               <span>{{ps.endereco}}</span>
             </div>
             <div class = "form-group">
-              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
-              <span>{{"Latitude: "+ps.latitude+"º, Longitude: "+ps.longitude+"º"}}</span>
-            </div>
-            <div class = "form-group">
               <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
               <ul>
-                <li class = "elemento" ng-repeat = "convenio in convenios">
-                  <a href = "#">{{convenio.nome}}</a>
+                <li ng-repeat = "convenio in convenios">
+                  <span>{{convenio.nome}}</span>
                 </li>
               </ul>
             </div>

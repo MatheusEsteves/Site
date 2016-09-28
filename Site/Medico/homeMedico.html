@@ -72,10 +72,21 @@
               ng-click = "exibirDadosMedico()">{{"CRM: "+medico.crm + "("+medico.uf+")"}}</span>
                     
         <div class="input-group boxPesquisa">
-          <input type="text" class="form-control" placeholder="Procure clínicas pelo nome">
+          <input type="text" class="form-control" ng-model = "nomeClinica" placeholder="Procure clínicas pelo nome">
           <span class="input-group-btn">
-            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+            <button class="btn btn-default" type="button" ng-click = "pesquisarClinicasPorNome()"><span class="glyphicon glyphicon-search"></span></button>
           </span>
+        </div> 
+          
+        <div class = "form-content" style = "display:none;" id = "dadosMedico">
+          <div class = "form-group">
+            <label style = 'font-family:Arial;font-size:16px;'>Especialidades</label><br>
+            <ul>
+              <li ng-repeat = "especialidade in especialidades">
+                <span>{{especialidade.nome}}</span>
+              </li>
+            </ul>
+          </div>
         </div> 
         
         <div class="menuButton">

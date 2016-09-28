@@ -83,6 +83,11 @@
           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
           Você já trabalha por volta de algum dos horários cadastrados nesse dia!
        </div> 
+    
+      <div class = "alert alert-danger fade in informacao" id = "alertDataInvalida">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          Você já trabalha por volta de algum dos horários cadastrados nesse dia!
+       </div> 
        
             <div class="topo">
                 <img src="../img/icone.png" class="logo"
@@ -118,24 +123,6 @@
 
             <div class="conteiner">
                     <div class="form-group campos">
-                    
-                    <div class="form-group">                         
-                         <div class="dropdown">     
-                           <button class = "btn btn-default dropdown-toggle diaSemana" data-toggle = "dropdown" id = "diaSemana">
-                             {{diaSemana}}
-                             <span class = "caret"></span>
-                           </button>
-                           <ul class="dropdown-menu">
-                             <li ng-click = "selecionarDia('SEG','Segunda-feira')"><a href="#">Segunda-feira</a></li>
-                             <li ng-click = "selecionarDia('TER','Terça-feira')"><a href="#">Terça-feira</a></li>
-                             <li ng-click = "selecionarDia('QUA','Quarta-feira')"><a href="#">Quarta-feira</a></li>
-                             <li ng-click = "selecionarDia('QUI','Quinta-feira')"><a href="#">Quinta-feira</a></li>
-                             <li ng-click = "selecionarDia('SEX','Sexta-feira')"><a href="#">Sexta-feira</a></li>
-                             <li ng-click = "selecionarDia('SÁB','Sábado')"><a href="#">Sábado</a></li>
-                             <li ng-click = "selecionarDia('DOM','Domingo')"><a href="#">Domingo</a></li>
-                           </ul>
-                         </div>                        
-                    </div>
                     
                     <div class="form-group">
                       <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha uma data inicial para o cadastro dos seus horários.">
@@ -179,7 +166,25 @@
                         </a>
                     </div>
 
-                    <input type= "submit" ng-click = "incluirHorario()" class="btn btn-primary" value="Cadastrar">                
+                    <input type= "submit" ng-click = "incluirHorario()" class="btn btn-primary" value="Cadastrar"> 
+                        
+                        <div class="form-group">                         
+                         <div class="dropdown">     
+                           <button class = "btn btn-default dropdown-toggle diaSemana" data-toggle = "dropdown" id = "diaSemana">
+                             {{diaSemana}}
+                             <span class = "caret"></span>
+                           </button>
+                           <ul class="dropdown-menu">
+                             <li ng-click = "selecionarDia('SEG','Segunda-feira')"><a href="#">Segunda-feira</a></li>
+                             <li ng-click = "selecionarDia('TER','Terça-feira')"><a href="#">Terça-feira</a></li>
+                             <li ng-click = "selecionarDia('QUA','Quarta-feira')"><a href="#">Quarta-feira</a></li>
+                             <li ng-click = "selecionarDia('QUI','Quinta-feira')"><a href="#">Quinta-feira</a></li>
+                             <li ng-click = "selecionarDia('SEX','Sexta-feira')"><a href="#">Sexta-feira</a></li>
+                             <li ng-click = "selecionarDia('SÁB','Sábado')"><a href="#">Sábado</a></li>
+                             <li ng-click = "selecionarDia('DOM','Domingo')"><a href="#">Domingo</a></li>
+                           </ul>
+                         </div>                        
+                    </div>
                 </div>
            </div>
            
@@ -207,14 +212,10 @@
               <span>{{clinica.endereco}}</span>
             </div>
             <div class = "form-group">
-              <label style = 'font-family:Arial;font-size:16px;'>Coordenada geográfica</label><br>
-              <span>{{"Latitude: "+clinica.latitude+"º, Longitude: "+clinica.longitude+"º"}}</span>
-            </div>
-            <div class = "form-group">
               <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
               <ul>
-                <li class = "elemento" ng-repeat = "convenio in convenios">
-                  <a href = "#">{{convenio.nome}}</a>
+                <li ng-repeat = "convenio in convenios">
+                  <span>{{convenio.nome}}</span>
                 </li>
               </ul>
             </div>

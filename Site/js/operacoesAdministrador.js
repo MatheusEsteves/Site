@@ -10,7 +10,7 @@ var app = angular.module("operacoesAdministrador",["ngStorage"]);
 app.controller("ConexaoBdController",function($http,$scope){
    $scope.conectarBd = function(){
 	 // Se a conexão for realizada, isConectado = true, caso contrário, isConectado = false.
-     $http.get("http://localhost:9999/conectarBd").
+     $http.get("http://wsadministrador.cfapps.io/conectarBd").
 		success(function(data){
 	      $scope.isConectado = data;
      }).error(function(erro){
@@ -30,55 +30,141 @@ app.controller("LoginAdmController",function($http,$scope,$sessionStorage){
 
   // Método para a realização do login de administrador.
   $scope.loginAdm = function(){
+      
 	// Verifica se existe administrador com esse usuario e essa senha trabalhando em alguma clínica ou
 	// em algum pronto socorro, ou seja, se há algum registro na tabela AdmClinica ou AdmPs tal que o
 	// id do administrador seja igual ao id do administrador com usuário e senha iguais aos digitados
 	// nesse formulário de login de administrador.
-    $http.post("http://localhost:9999/isAdmClinica",$scope.adm).success(function(isAdmClinica){
+    $http.post("http://wsadministrador.cfapps.io/isAdmClinica",$scope.adm).success(function(isAdmClinica){
       $scope.isAdmClinica = isAdmClinica;
-      if (isAdmClinica)
-    	// Caso exista administrador com esses dados trabalhando em alguma clínica, pesquisamos todas as clínicas
+        
+        // Caso exista administrador com esses dados trabalhando em alguma clínica, pesquisamos todas as clínicas
     	// que esse administrador trabalha e as armazenamos na variável de sessão $sessionStorage.
-        $http.get("http://localhost:9999/getClinicas").success(function(clinicas){
+      if (isAdmClinica)    	
+        $http.get("http://wsadministrador.cfapps.io/getClinicas").success(function(clinicas){ //#### não pode exibir todas as clínicas, só as relacionadas ao adm
           $sessionStorage.clinicas = clinicas;
         }).error(function(erro){
           console.log(erro);	
-        });
-	  $http.post("http://localhost:9999/isAdmPs",$scope.adm).success(function(isAdmPs){
-		$scope.isAdmPs = isAdmPs;
-		
-		if (isAdmPs)
-		  // Caso exista administrador com esses dados trabalhando em algum pronto socorro, pesquisamos todas os
-	      // pronto socorros que esse administrador trabalha e os armazenamos na variável de sessão $sessionStorage.
-	      $http.get("http://localhost:9999/getProntoSocorros").success(function(prontoSocorros){
-	        $sessionStorage.prontoSocorros = prontoSocorros;
-	        $sessionStorage.usuario = $scope.adm.usuario;
-		    window.location.href = "homeAdm.html";
-	      }).error(function(erro){
-	    	console.log(erro);  
-	      });
-		else
-		  if ($scope.isAdmClinica){
-		    $sessionStorage.usuario = $scope.adm.usuario;
-			window.location.href = "homeAdm.html";
-		  }
-	  }).error(function(erro){
-	    console.log(erro);	
-	  });
-	  
-	  // Caso não exista administrador com esse usuário e essa senha trabalhando em alguma clínica
-	  // ou em algum pronto socorro, exibimos a mensagem abaixo.
-	  if (!$scope.isAdmClinica && !$scope.isAdmPs)
-	    bootbox.dialog({
-	      message: 'O usuário e a senha que você digitou não coincidem.',
-		  buttons:{btnVoltar:{label:"Voltar",class:"btn-pimary"}}
-		});
+        });        
     }).error(function(erro){
-      console.log(erro);	
-    });
-  };
-});
+        console.log(erro);	
+       });
+   
+    $http.post("http://wsadministrador.cfapps.io/isAdmPs",$scope.adm).success(function(isAdmPs){
+	$scope.isAdmPs = isAdmPs;
+		
+        // Caso exista administrador com esses dados trabalhando em algum pronto socorro, pesquisamos todas os
+        // pronto socorros que esse administrador trabalha e os armazenamos na variável de sessão $sessionStorage.    
+        if (isAdmPs)		  
+              $http.get("http://wsadministrador.cfapps.io/getProntoSocorros").success(function(prontoSocorros){ //#### não pode exibir todos os ps, só as relacionadas ao adm
+                $sessionStorage.prontoSocorros = prontoSocorros;
+                $sessionStorage.usuario = $scope.adm.usuario;
+                window.location.href = "homeAdm.html";
+              }).error(function(erro){
+                console.log(erro);  
+              });
+            else
+              if ($scope.isAdmClinica){
+                $sessionStorage.usuario = $scope.adm.usuario;
+                window.location.href = "homeAdm.html";
+              }
+          }).error(function(erro){
+            console.log(erro);	
+          });
 
+          // Caso não exista administrador com esse usuário e essa senha trabalhando em alguma clínica
+          // ou em algum pronto socorro, exibimos a mensagem abaixo.
+          if (!$scope.isAdmClinica && !$scope.isAdmPs)
+            bootbox.dialog({
+              message: 'O usuário e a senha que você digitou não coincidem.',
+              buttons:{btnVoltar:{label:"Voltar",class:"btn-pimary"}}
+            });
+      
+  };
+    
+});
+    
+//Controller responsável pelo cadastro de médico
+app.controller("CadastrarMedicoController",function($http,$scope, $sessionStorage){
+    
+    $scope.clinica = $sessionStorage.clinica;
+    $scope.ps = $sessionStorage.ps;    
+    $scope.medico = {
+       id: 0,
+       uf: '',
+       crm: '', 
+       nome: ''
+    };
+        
+    $scope.senha = '';
+    
+    
+    $http.get("http://wsadministrador.cfapps.io/getEstados").success(function(estados){          
+          $scope.estados = estados;          
+    }).error(function(erro){
+          console.log(erro);	
+        });  
+    
+    
+    
+    $scope.cadastrarMedico = function()
+    {        
+        if($scope.ps)
+        {
+            var medicoPs = {
+              medico: $scope.medico                
+            };
+            
+            //Cadastra o médico no banco e o relaciona a um pronto-socorro
+            $http.put("http://wsadministrador.cfapps.io/incluirMedicoPs", medicoPs).success(function(data){
+
+              bootbox.dialog({
+                 message:"O seu cadastro foi realizado com sucesso.",
+                 buttons:{
+                   btnProsseguir:{
+                     label:"Prosseguir",
+                     class:"btn-primary",
+                     callback:function(){
+                       window.location.href = "ps/homeAdmPs.html"	 
+                     }
+                   }   
+                 }	       	 
+              });
+
+            }).error(function(data){
+              console.log(data);	
+            });        
+        }
+        else
+            {
+                 var medicoClinica = {
+                     medico: $scope.medico,
+                     senha: $scope.senha
+                 }
+                 
+                //Cadastra o médico no banco e o relaciona a uma clínica ****verificar o porquê o incluir está dando internal error
+                $http.put("http://wsadministrador.cfapps.io/incluirMedicoClinica",medicoClinica).success(function(data){
+
+                  bootbox.dialog({
+                     message:"O seu cadastro foi realizado com sucesso.",
+                     buttons:{
+                       btnProsseguir:{
+                         label:"Prosseguir",
+                         class:"btn-primary",
+                         callback:function(){
+                           window.location.href = "clinica/homeAdmClinica.html"	 
+                         }
+                       }   
+                     }	       	 
+                  });
+
+                }).error(function(data){
+                  console.log(data);	
+                });   
+            }
+    };   
+});
+               
 // Controller que controla a seleção dos botões para indicar se queremos visualizar clínicas ou 
 // pronto socorros na tabela de hospitais para selecionarmos.
 app.controller("TabController",function(){
@@ -130,8 +216,8 @@ app.controller("HomeAdmController",function($http,$scope,$sessionStorage){
           // que armazena um objeto AdmClinica na própria web service de paciente, indicando uma relação entre um
       	  // administrador e uma clínica. Pesquisamos todos os convênios que essa clínica selecionada possui e 
           // migramos para a área do administrador nessa clínica.
-          $http.get("http://localhost:9999/loginAdmClinica/"+$sessionStorage.clinica.id).success(function(isLogado){
-            $http.get("http://localhost:9999/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(convenios){
+          $http.get("http://wsadministrador.cfapps.io/loginAdmClinica/"+$sessionStorage.clinica.id).success(function(isLogado){
+            $http.get("http://wsadministrador.cfapps.io/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(convenios){
               $sessionStorage.convenios = convenios;
               window.location.href = "../Adm/clinica/homeAdmClinica.html";
             }).error(function(erro){
@@ -142,6 +228,37 @@ app.controller("HomeAdmController",function($http,$scope,$sessionStorage){
           });
         }
       }
+    });
+  };
+    
+  $scope.pesquisarInstituicao = function()    
+  {
+    $http.get("http://wsadministrador.cfapps.io/getClinicas").success(function(clinicas){
+      $sessionStorage.clinicas = clinicas;
+    }).error(function(erro){
+      console.log(erro);
+    });
+          
+    $http.get("http://wsadministrador.cfapps.io/getProntoSocorros").success(function(prontoSocorros){
+      $sessionStorage.prontoSocorros = prontoSocorros;
+    }).error(function(erro){
+      console.log(erro);  
+    });
+  }; 
+    
+  $scope.nomeInstituicao = "";
+  $scope.pesquisarInstituicaoPorNome = function()
+  {
+    $http.get("http://wsadministrador.cfapps.io/getClinicasPorNome/"+$scope.nomeInstituicao).success(function(clinicas){
+      $scope.clinicas = clinicas;
+    }).error(function(erro){
+      console.log(erro);
+    });
+          
+    $http.get("http://wsadministrador.cfapps.io/getProntoSocorrosPorNome/"+$scope.nomeInstituicao).success(function(prontoSocorros){
+      $scope.prontoSocorros = prontoSocorros;
+    }).error(function(erro){
+      console.log(erro);  
     });
   };
   
@@ -172,8 +289,8 @@ app.controller("HomeAdmController",function($http,$scope,$sessionStorage){
           // que armazena um objeto AdmProntoSocorro na própria web service de paciente, indicando uma relação entre um
           // administrador e um pronto socorro. Pesquisamos todos os convênios que esse pronto socorro selecionado possui 
           // e migramos para a área do administrador nesse pronto socorro.
-          $http.get("http://localhost:9999/loginAdmPs/"+$sessionStorage.ps.id).success(function(isLogado){
-        	$http.get("http://localhost:9999/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(convenios){
+          $http.get("http://wsadministrador.cfapps.io/loginAdmPs/"+$sessionStorage.ps.id).success(function(isLogado){
+        	$http.get("http://wsadministrador.cfapps.io/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(convenios){
               $sessionStorage.convenios = convenios;
               window.location.href = "../Adm/ps/homeAdmPs.html";
             }).error(function(erro){
@@ -218,7 +335,7 @@ app.controller("HomeAdmClinicaController",function($http,$scope,$sessionStorage)
   // Pesquisamos todos os pacientes que possuem alguma consulta na clínica selecionada e armazenamos
   // eles na variável de sessão $sessionStorage. Após isso iremos para a página de visualização de pacientes.
   $scope.exibirPacientes = function(){
-    $http.get("http://localhost:9999/getPacientes").success(function(pacientes){
+    $http.get("http://wsadministrador.cfapps.io/getPacientes").success(function(pacientes){
       $sessionStorage.pacientes = pacientes;
       window.location.href = "visualizaPaciente.html";
     }).error(function(erro){
@@ -230,7 +347,7 @@ app.controller("HomeAdmClinicaController",function($http,$scope,$sessionStorage)
   // com o id desse médico na tabela MedicoClinica. Armazenamos eles na variável de sessão $sessionStorage e
   // migramos para a página de visualização de médicos.
   $scope.exibirMedicos = function(){
-	$http.get("http://localhost:9999/getMedicosClinica").success(function(medicos){
+	$http.get("http://wsadministrador.cfapps.io/getMedicosClinica").success(function(medicos){
 	  $sessionStorage.medicos = medicos;
 	  window.location.href = "visualizaMedico.html";
 	}).error(function(erro){
@@ -248,6 +365,17 @@ app.controller("PacientesController",function($http,$scope,$sessionStorage){
   $scope.clinica   = $sessionStorage.clinica;
   $scope.convenios = $sessionStorage.convenios;
   $scope.usuario   = $sessionStorage.usuario;
+    
+  // Função que retorna todos os pacientes com a parte do nome espeficiada como parâmetro.
+  $scope.pesquisarPacientesPorNome = function(){
+    var nome = $("#txtPaciente").val();
+    
+    $http.get("http://wsadministrador.cfapps.io/getPacientesPorNome/"+nome).success(function(pacientes){
+      $scope.pacientes = pacientes;
+    }).error(function(erro){
+      console.log(erro);    
+    });
+  };
   
   // Exibe os dados da clínica selecionada.
   $scope.exibirDadosClinica = function(){
@@ -378,7 +506,7 @@ app.controller("PacientesController",function($http,$scope,$sessionStorage){
 	  	         "var data = $('#txtData').val();"+
 	  	         "var parametros = $('#btnMedico').val()+'/'+data;"+
 	  	         "$.ajax({"+
-	      	       "url:'http://localhost:9999/getConsultasPorPacienteMedicoData/'+parametros,"+
+	      	       "url:'http://wsadministrador.cfapps.io/getConsultasPorPacienteMedicoData/'+parametros,"+
 	      	       "data:{format:'json'},"+
 	      	       "error:function(erro){console.log(erro);},"+
 	      	       "success:function(consultas){"+
@@ -408,7 +536,7 @@ app.controller("PacientesController",function($http,$scope,$sessionStorage){
 	           "function selecionarMedico(parametros){"+
 	            "$('#btnMedico').val(parametros);"+
 	            "$.ajax({"+
-	      	     "url:'http://localhost:9999/getConsultasPorPacienteMedico/'+parametros,"+
+	      	     "url:'http://wsadministrador.cfapps.io/getConsultasPorPacienteMedico/'+parametros,"+
 	      	     "data:{format:'json'},"+
 	      	     "error:function(erro){console.log(erro);},"+
 	      	     "success:function(consultas){"+
@@ -543,7 +671,7 @@ app.controller("PacientesController",function($http,$scope,$sessionStorage){
   	$scope.setPaciente($scope.pacientes[indice]);
   	$sessionStorage.paciente = $scope.paciente;
   	// Pesquisamos todos os médicos com os quais o paciente selecionado possui alguma consulta.
-  	$http.get("http://localhost:9999/getMedicosPorPaciente/"+$scope.paciente.id).success(function(medicos){
+  	$http.get("http://wsadministrador.cfapps.io/getMedicosPorPaciente/"+$scope.paciente.id).success(function(medicos){
       $scope.setMedicos(medicos);
       $scope.setMedico(medicos[0]);
       $scope.exibirDadosPaciente();
@@ -561,7 +689,16 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
   $scope.medicos   = $sessionStorage.medicos;
   $scope.clinica   = $sessionStorage.clinica;
   $scope.convenios = $sessionStorage.convenios;
-  $scope.usuario   = $sessionStorage.usuario;
+  $scope.usuario   = $sessionStorage.usuario; 
+    
+  $scope.nomeMedico = "";
+  $scope.pesquisarMedicosPorNome = function(){
+    $http.get("http://wsadministrador.cfapps.io/getMedicosClinicaPorNome/"+$scope.nomeMedico).success(function(medicos){
+      $scope.medicos = medicos;
+    }).error(function(erro){
+      console.log(erro);  
+    });  
+  };
             	  
   // Método para exibir os dados da clínica selecionada anteriormente.
   $scope.exibirDadosClinica = function(){
@@ -671,7 +808,7 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
 		    "function pesquisarHorario(){"+
 		     "var data = $('#txtData').val();"+
              "$.ajax({"+
-	           "url:'http://localhost:9999/getHorariosPorMedicoData/'+'"+$scope.medico.id+"'+'/'+data,"+
+	           "url:'http://wsadministrador.cfapps.io/getHorariosPorMedicoData/'+'"+$scope.medico.id+"'+'/'+data,"+
 	           "data:{format:'json'},"+
 	           "error:function(erro){console.log(erro);},"+
 	           "success:function(horarios){"+
@@ -681,7 +818,7 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
             "}"+ 
 		    "function exibirHorario(){"+
 			 "$.ajax({"+
-			  "url:'http://localhost:9999/getHorariosPorMedico/"+$scope.medico.id+"',"+
+			  "url:'http://wsadministrador.cfapps.io/getHorariosPorMedico/"+$scope.medico.id+"',"+
 			  "data:{format:'json'},"+
 			  "error:function(erro){console.log(erro);},"+
 			  "success:function(horarios){"+
@@ -789,7 +926,7 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
  	            "var data = $('#txtData').val();"+
  	            "var parametros = $('#btnPaciente').val()+'/'+data;"+
  	            "$.ajax({"+
-     	         "url:'http://localhost:9999/getConsultasPorPacienteMedicoData/'+parametros,"+
+     	         "url:'http://wsadministrador.cfapps.io/getConsultasPorPacienteMedicoData/'+parametros,"+
      	         "data:{format:'json'},"+
      	         "error:function(erro){console.log(erro);},"+
      	         "success:function(consultas){"+
@@ -819,7 +956,7 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
 	           "function selecionarPaciente(parametros){"+
 	            "$('#btnPaciente').val(parametros);"+
 	            "$.ajax({"+
-	      	     "url:'http://localhost:9999/getConsultasPorPacienteMedico/'+parametros,"+
+	      	     "url:'http://wsadministrador.cfapps.io/getConsultasPorPacienteMedico/'+parametros,"+
 	      	     "data:{format:'json'},"+
 	      	     "error:function(erro){console.log(erro);},"+
 	      	     "success:function(consultas){"+
@@ -968,10 +1105,10 @@ app.controller("MedicoClinicaController",function($http,$scope,$sessionStorage){
     $scope.setMedico(medico);
     
     // Pesquisamos todas as especialidades desse médico selecionado.
-    $http.get("http://localhost:9999/getEspecialidades/"+medico.id).success(function(especialidades){
+    $http.get("http://wsadministrador.cfapps.io/getEspecialidades/"+medico.id).success(function(especialidades){
       $scope.setEspecialidades(especialidades);
       // Pesquisamos todos os pacientes que possuem alguma consulta com esse médico selecionado na clínica determinada.
-      $http.get("http://localhost:9999/getPacientesPorMedico/"+medico.id).success(function(pacientes){
+      $http.get("http://wsadministrador.cfapps.io/getPacientesPorMedico/"+medico.id).success(function(pacientes){
     	$scope.pacientes = pacientes;
     	$scope.visualizarDadosMedico();
       }).error(function(erro){
@@ -993,6 +1130,16 @@ app.controller("MedicoPsController",function($http,$scope,$sessionStorage){
   $scope.medicosPlantao = $sessionStorage.medicosPlantao;
   $scope.ps             = $sessionStorage.ps;
   $scope.convenios      = $sessionStorage.convenios;
+    
+  $scope.nomeMedico = "";
+  $scope.pesquisarMedicosPorNome = function(){
+    $http.get("http://wsadministrador.cfapps.io/getMedicosPsPorNome/"+$scope.nomeMedico).success(function(medicos){
+      $scope.medicos = medicos;
+      $scope.medicosPlantao = medicos;
+    }).error(function(erro){
+      console.log(erro);  
+    });  
+  };
   
   // Exibimos os dados do pronto socorro selecionado anteriormente.
   $scope.exibirDadosPs = function(){
@@ -1059,11 +1206,11 @@ app.controller("MedicoPsController",function($http,$scope,$sessionStorage){
     $scope.setMedico(medico);
     
     // Pesquisamos todas as especialidades do médico selecionado.
-    $http.get("http://localhost:9999/getEspecialidades/"+medico.id).success(function(especialidades){
+    $http.get("http://wsadministrador.cfapps.io/getEspecialidades/"+medico.id).success(function(especialidades){
       $scope.setEspecialidades(especialidades);
       
       // Verificamos se o médico selecionado está em plantão no momento ou não.
-      $http.get("http://localhost:9999/isMedicoPresente/"+medico.id).success(function(isMedicoPresente){
+      $http.get("http://wsadministrador.cfapps.io/isMedicoPresente/"+medico.id).success(function(isMedicoPresente){
     	$scope.isPresente = isMedicoPresente;  
       }).error(function(erro){
         console.log(erro);	  
@@ -1124,12 +1271,12 @@ app.controller("HomeAdmPsController",function($http,$scope,$sessionStorage){
   $scope.exibirMedicos = function(){
 	// Pesquisamos todos os médicos que trabalham em determinado pronto socorro e armazenamos
 	// eles na variável de sessão $sessionStorage.
-    $http.get("http://localhost:9999/getMedicosPs").success(function(medicos){
+    $http.get("http://wsadministrador.cfapps.io/getMedicosPs").success(function(medicos){
       $sessionStorage.medicos = medicos;
       // Pesquisamos todos os médicos que estão em plantão em determinado pronto socorro e 
       // armazenamos eles na variável de sessão $sessionStorage. Após isso, migramos para
       // a área de visualização de médicos do administrador.
-      $http.get("http://localhost:9999/getMedicosPlantao").success(function(medicosPlantao){
+      $http.get("http://wsadministrador.cfapps.io/getMedicosPlantao").success(function(medicosPlantao){
         $sessionStorage.medicosPlantao = medicosPlantao;
         window.location.href = "visualizaMedico.html";
       }).error(function(erro){
