@@ -1,0 +1,26 @@
+07/08
+-----
+
+Consertei o erro que fazia todos os ícones dos botões desaparecerem.
+
+Solução:
+--------
+Adicionar as seguintes bibliotecas às páginas html
+
+http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css
+https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js
+http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
+
+erros encontrados:
+------------------
+Na páginas de login, quando se clica no botão entrar às vezes ele entra apenas no segundo clique 
+ou então exibe a mensagem dizendo que os dados digitados são inválidos, mas em seguida entra.
+
+Até o momento este erro está sem solução.
+
+ideias
+-------
+criar os métodos:
+
+getClinicaPorNome(String nome)
+getPsPorNome(String nome)

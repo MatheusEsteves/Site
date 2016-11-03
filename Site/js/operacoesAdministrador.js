@@ -84,9 +84,59 @@ app.controller("LoginAdmController",function($http,$scope,$sessionStorage){
     
 });
     
-//Controller responsável pelo cadastro de médico
-app.controller("CadastrarMedicoController",function($http,$scope, $sessionStorage){
+app.controller("CadastroMedicoClinicaController",function($http,$scope,$sessionStorage){
+  $scope.clinica   = $sessionStorage.clinica;
+  $scope.convenios = $sessionStorage.convenios;
     
+  // Preenche todos os estados para podermos escolher posteriormente
+  $http.get("http://wsadministrador.cfapps.io/getEstados").success(function(estados){          
+    $scope.estados = estados;          
+  }).error(function(erro){
+    console.log(erro);	
+  });  
+    
+  // Exibe os dados da clínica selecionada.
+  $scope.exibirDadosClinica = function(){
+    bootbox.alert({
+      title:"<h3><center><span>"+$scope.clinica.nome+"</span></center></h3>",
+	  message:$("#dadosClinica").html(),
+	    buttons:{
+		  ok:{
+		    label:"Voltar",
+		    class:"btn-primary"
+		  }
+		}
+    }).find('.modal-content').css({
+      'max-height':'560px',
+	  'overflow-y':'auto'
+    }).scrollTop = 0;
+  };
+    
+  $scope.medico = {
+    id   : 0,
+    uf   : '',
+    crm  : '',
+    nome : ''
+  };
+  $scope.senha = '';
+    
+  $scope.cadastrarMedico = function(){
+    var inclusaoMedicoClinica = {
+      'medico' : $scope.medico,
+      'senha'  : $scope.senha
+    };
+      
+    $http.put("http://wsadministrador.cfapps.io/incluirMedicoClinica",inclusaoMedicoClinica).success(function(isMedicoIncluido){
+     alert("entrou");
+      $("#alertInclusao").show();
+    }).error(function(erro){
+     console.log(erro);    
+    });
+  };
+});
+    
+//Controller responsável pelo cadastro de médico
+app.controller("CadastroMedicoPsController",function($http,$scope, $sessionStorage){
     $scope.clinica = $sessionStorage.clinica;
     $scope.ps = $sessionStorage.ps;    
     $scope.medico = {

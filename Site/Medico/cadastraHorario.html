@@ -86,9 +86,19 @@
     
       <div class = "alert alert-danger fade in informacao" id = "alertDataInvalida">
           <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-          Você já trabalha por volta de algum dos horários cadastrados nesse dia!
-       </div> 
-       
+          A data final deve ser posterior a data inicial!
+      </div> 
+          
+      <div class = "alert alert-danger fade in informacao" id = "alertHoraInvalida">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          O horário final deve ser posterior ao horário inicial!
+      </div>
+            
+      <div class = "alert alert-danger fade in informacao" id = "alertTempoInvalido">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          O tempo necessário para consulta e intervalo deve estar de acordo com o tempo de trabalho disponível do médico!
+      </div>
+     
             <div class="topo">
                 <img src="../img/icone.png" class="logo"
                      onmouseover = "this.style.cursor = 'pointer';"

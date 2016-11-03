@@ -299,20 +299,20 @@
             <div class="form-group">
               <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha uma data para realizar seus atendimentos!">
                 <label for="txtData">Data:</label>
-                <input type ="date" class = "form-control" id="txtData" ng-value = "horario.data">
+                <input type ="date" class = "form-control" id="txtData" ng-model="horario.data" ng-change="setData()">
               </a>
             </div>
         
             <div class="form-group">
               <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha um horário para iniciar seus atendimentos!">
                 <label for="txtInicio">Início:</label>
-                <input type="time" class="form-control" id="txtInicio" ng-value = "horario.horaInicio">
+                <input type="time" class="form-control" id="txtInicio" ng-model = "horario.horaInicio" ng-change="setHoraInicio()">
               </a>
             </div>
             <div class="form-group">
               <a href="#" data-toggle="tooltip" data-placement="right" title="Escolha um horário para finalizar seus atendimentos!">
                 <label for="txtFim">Fim:</label>
-                <input type="time" class="form-control" id="txtFim" ng-value = "horario.horaFim">
+                <input type="time" class="form-control" id="txtFim" ng-model = "horario.horaFim" ng-change="setHoraFim()">
               </a>
             </div>
             

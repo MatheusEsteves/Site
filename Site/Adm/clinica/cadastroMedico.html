@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html ng-app = "operacoesAdministrador">
+
+    <head>    
+
+    <meta charset="utf-8"/>
+                   
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/barraPadrao.css">    
+    <link rel="stylesheet" href="../../css/cadastroMedico.css">   
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../../js/jquery.mask.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../js/angular.min.js"></script>
+    <script src="../../js/bootbox.min.js"></script>
+    <script src="../../js/ngStorage.min.js"></script>
+    <script src="../../js/operacoesAdministrador.js"></script>
+    
+    <title>Visualização de paciente</title>
+        
+    <style>
+        .menuButton{
+            width: 40px;
+            position: absolute;
+            top: 35px;
+            right: 20px;
+        } 
+        ul
+        {
+          list-style:none;
+        }
+        .elemento a
+        {
+          font-size: 15px;
+        }
+        .elemento a:hover
+        {
+          text-decoration: none;  
+          transition-duration: 0.75s;
+          color: #003074;
+          font-size: 16px;    
+        }
+    </style>    
+        
+    </head>    
+    
+    <body>
+        <form ng-controller = "CadastroMedicoClinicaController as cadastroMedicoClinicaCtrl">
+            <div class = "alert alert-info fade in informacao" id = "alertInclusao">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              O médico {{medico.nome}} foi cadastrado com sucesso na clínica {{clinica.nome}}
+            </div>  
+            
+            <div class="topo">
+                <img src="../../img/icone.png" class="logo"
+                     onmouseover = "this.style.cursor = 'pointer';"
+                     ng-click = "exibirDadosClinica()"/>
+                            
+                <span class="nome"
+                      onmouseover = "this.style.cursor = 'pointer';"
+                      ng-click = "exibirDadosClinica()">{{clinica.nome}}</span>  
+                <span class="subInformacao"
+                      onmouseover = "this.style.cursor = 'pointer';"
+                      ng-click = "exibirDadosClinica()">
+                       {{
+                        clinica.cidade+"("+clinica.uf+"), Telefone: "+
+                        "("+clinica.telefone.substring(0,2)+")"+
+                        clinica.telefone.substring(2,6)+"-"+
+                        clinica.telefone.substring(6,10)
+                       }}
+                </span>
+
+            <div class="conteiner">
+                <div class="form-group campos">
+
+                    <div class="form-group">
+                      <label for="txtCrm">CRM:</label>
+                      <input type="text" class="form-control" id="txtCrm" ng-model = "medico.crm" placeholder="CRM" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="txtNome">Nome:</label>
+                      <input type="text" class="form-control" id="txtNome" ng-model = "medico.nome" placeholder="Nome" required>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="txtSenha">Senha:</label>
+                      <input type="password" class="form-control" id="txtSenha" ng-model = "senha" placeholder="Digite sua senha" required>
+                    </div>
+
+
+                     <div class="form-group">                         
+                         <div>                            
+                             <label for="slcEstado">Estado:</label>
+                             <select  id="slcEstado" class = "btn btn-default dropdown-toggle" ng-model = "medico.uf">
+                                <option ng-repeat="estado in estados | orderBy:'nome'" value="{{estado.sigla}}">{{estado.nome}}</option>                               
+                             </select>                                                      
+                         </div>                        
+                    </div>
+                    
+                    <input type="button" class="btn btn-primary" value="Cadastrar" ng-click="cadastrarMedico()">            
+                </div>
+            </div>
+                
+          <div class = "form-content" style = "display:none;" id = "dadosClinica">
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Cidade</label><br>
+              <span>{{clinica.cidade+"("+clinica.uf+")"}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Telefone</label><br>
+              <span>
+               {{
+                "("+clinica.telefone.substring(0,2)+")"+
+                clinica.telefone.substring(2,6)+"-"+
+                clinica.telefone.substring(6,10)
+               }}
+              </span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Bairro</label><br>
+              <span>{{clinica.bairro}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Endereço</label><br>
+              <span>{{clinica.endereco}}</span>
+            </div>
+            <div class = "form-group">
+              <label style = 'font-family:Arial;font-size:16px;'>Convênios</label><br>
+              <ul>
+                <li ng-repeat = "convenio in convenios">
+                  <span>{{convenio.nome}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        
+        </form>
+    </body>
+</html>

@@ -25,10 +25,25 @@ app.controller("LoginPacienteController",function($http,$scope,$sessionStorage){
      cpf:"",
      senha:""
    };
+    
+   $sessionStorage.paciente = {
+     id             : 1,
+     bairro         : "Jardim Nossa Senhora de Fátima",
+     celular        : "19221190331",
+     complemento    : "Ao lado do número 719",   
+     cpf            : "47065455874",
+     nome           : "Matheus Esteves Zanoto",
+     senha          : "Matheus1998@",
+     endereco       : "Rua Cícero Ramos Meira, 46",
+     telefone       : "1921190331",
+     cidade         : "Hortolândia",
+     uf             : "SP",
+     dataNascimento : "27/11/1998"
+   };
   
    // Método para a realização do login do paciente.
    this.loginPaciente = function(){
-	 var paciente = {
+	 /*var paciente = {
 	   cpf:"",
 	   senha:""
 	 };
@@ -66,7 +81,8 @@ app.controller("LoginPacienteController",function($http,$scope,$sessionStorage){
 	    	 message:"O CPF e a senha que você digitou não coincidem.",
 	    	 buttons:{ok:{label:"Voltar",class:"btn-primary"}}
 	       });
-	 });
+	 });*/
+     window.location.href = "homePaciente.html";
    };
 });
 
@@ -75,22 +91,96 @@ app.controller("LoginPacienteController",function($http,$scope,$sessionStorage){
 //serão exibidos no mapa.
 app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
   // Obtem os dados do paciente logado da variável de sessão $sessionStorage.
+  $sessionStorage.latReferencia = -22.9464238;
+  $sessionStorage.lonReferencia = -46.5264253;
   $scope.paciente = $sessionStorage.paciente;	
+    
+  var clinicas = [
+        {   
+          id        : 1,
+          bairro    : "Jardim Guanabara",
+          endereco  : "Rua Eduardo Lane, 200",
+          nome      : "Clínica Lane",
+          telefone  : "1932020155",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8869532,
+          longitude : -47.1007114
+        },
+        {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+        },
+        {
+          id        : 3,
+          bairro    : "Cambuí",
+          endereco  : "Rua Doutor Sampaio Peixoto, 206",
+          nome      : "Murgel Odontologia",
+          telefone  : "1921190331",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8897432,
+          longitude : -47.0529384
+        }
+      ];
+    
+  var prontoSocorros = [
+         {   
+          id        : 1,
+          bairro    : "Centro",
+          endereco  : "Avenida Andrade Neves, 402",
+          nome      : "Vera Cruz",
+          telefone  : "1937343091",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.879046,
+          longitude : -47.061822
+        },
+        {   
+          id        : 2,
+          bairro    : "Centro",
+          endereco  : "Av. Pref. Faria Lima, 340",
+          nome      : "Hospital Municipal Dr.Mario Gatti",
+          telefone  : "1937725700",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.9160971,
+          longitude : -47.0707458
+        },
+        {   
+          id        : 3,
+          bairro    : "Jardim Alto Belém",
+          endereco  : "Rua Dirce De Oliveira Santos, 280",
+          nome      : "Campo Grande",
+          telefone  : "1932218436",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.9511469,
+          longitude : -47.1899432
+        }
+      ];
   
   // Método que será utilizado posteriormente para obter um objeto de uma clínica com base em seu nome,
   // dentre todas as clínicas armazenadas no vetor.
   $scope.getClinica = function(nome){
-	for (i = 0 ; i < $scope.clinicas.length; i++)
-      if ($scope.clinicas[i].nome == nome)
-        return $scope.clinicas[i];
+	for (i = 0 ; i < clinicas.length; i++)
+      if (clinicas[i].nome == nome)
+        return clinicas[i];
   };
   
   // Método que será utilizado posteriormente para obter um objeto de um pronto socorro com base em seu nome,
   // dentre todos os pronto socorros armazenados no vetor.
   $scope.getPs = function(nome){
-	for (i = 0 ; i < $scope.prontoSocorros.length; i++)
-	  if ($scope.prontoSocorros[i].nome == nome)
-	    return $scope.prontoSocorros[i];
+	for (i = 0 ; i < prontoSocorros.length; i++)
+	  if (prontoSocorros[i].nome == nome)
+	    return prontoSocorros[i];
   };
   
   // Em alguns casos, pesquisaremos hospitais no mapa com base no seu nome, em alguma especialidade
@@ -174,25 +264,24 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
   
   // Inicializa a exibição do mapa com base nos dados dos hospitais buscados do banco de dados.
   $scope.inicializarMapa = function(){
+    var mapProp = {
+	    center:new google.maps.LatLng($sessionStorage.latReferencia,$sessionStorage.lonReferencia),
+		zoom: 16,
+        mapTypeId: google.maps.MapTypeId.ROADMAP	  
+	  };     
+         
+   // Cria o mapa do google maps com base na configuração criada anteriormente e no local onde
+  // ele será exibido (mapaHospitais).
+	 $scope.map = new google.maps.Map(document.getElementById("mapaHospitais"),mapProp);	
 	// Busca a geolocalização do usuário deste computador no site ipinfo. Os dados são retornados 
 	// no formato json.
-	$http.get("http://ipinfo.io/json").success(function(data){
+	/*$http.get("http://ipinfo.io/json").success(function(data){
 	  var loc = data.loc;
 	  var posVirgula = loc.indexOf(',');
 	  // Obtem a latitude e a longitude do usuário deste computador dos dados retornados anteriormente.
 	  $sessionStorage.latReferencia = parseFloat(loc.slice(0,posVirgula-1));
 	  $sessionStorage.lonReferencia = parseFloat(loc.slice(posVirgula+1,loc.length-1));
-	  // Cria a configuração do mapa, cuja centralização está na localização do usuário (latitude e longitude).
-	  var mapProp = {
-	    center:new google.maps.LatLng($sessionStorage.latReferencia,$sessionStorage.lonReferencia),
-		zoom: 16,
-        mapTypeId: google.maps.MapTypeId.ROADMAP	  
-	  };     
-        
-        
-	  // Cria o mapa do google maps com base na configuração criada anteriormente e no local onde
-	  // ele será exibido (mapaHospitais).
-	  $scope.map = new google.maps.Map(document.getElementById("mapaHospitais"),mapProp);	        
+	  // Cria a configuração do mapa, cuja centralização está na localização do usuário (latitude e longitude).        
         
 	  // Caso já tenhamos pesquisado os hospitais no banco de dados, não pesquisaremos novamente ao entrar
 	  // nessa página, mas sim obteremos eles da variável de sessão $sessionStorage.
@@ -220,14 +309,20 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		  console.log(data);
 		});
 		$sessionStorage.isHospitalJaPesquisado = true;
-	  }
-	 
-	  var clinicas = $scope.clinicas;
+      }*/
+      
+      // Colocamos um marcador para indicar onde o paciente se encontra.
+      var markerPaciente = new google.maps.Marker({
+         position : new google.maps.LatLng($sessionStorage.latReferencia,$sessionStorage.lonReferencia),
+         icon     : "../img/voce.png",
+         map      : $scope.map
+      });
+      
 	  // Para cada clínica da lista de clínicas retornada, adicionados um marcador que irá 
 	  // representar essa clínica no mapa.
-	  for (i = 0; i < clinicas.length; i++){
+	  for (var i = 0; i < clinicas.length; i++){
 		 // Objeto da clínica.
-		 var clinica = $scope.clinicas[i];
+         var clinica = clinicas[i];
 		 // Adicionamos um marcador para essa clínica.
 		 var marker  = new google.maps.Marker({
 		   // A posição desse marcador será a localização dessa clínica (latitude e longitude), obtida no banco de dados.
@@ -239,8 +334,7 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // Adicionamos um título para o marcador, que será igual ao nome dessa clínica.
 		   title    : clinica.nome
 		 });
-          
-          
+        
 		 // Adicionamos um evento onclick para esse marcador já criado.
 		 google.maps.event.addListener(marker,'click',function(){
 		   // Ao clicarmos no marcador dessa clínica determinada, o zoom do mapa irá aumentar e a centralização
@@ -251,20 +345,53 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // obtemos o objeto dessa clínica com base em seu nome, que foi armazenado no título do marcador.
 		   $sessionStorage.clinica = $scope.getClinica(this.getTitle());
 		   // Pesquisamos todos os convênios que essa clínica possui, com base no id da clínica selecionada.
-		   $http.get("http://wspaciente.cfapps.io/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(data){
+		   /*$http.get("http://wspaciente.cfapps.io/getConveniosPorClinica/"+$sessionStorage.clinica.id).success(function(data){
 		     $sessionStorage.convenios = data;
 		   }).error(function(data){
 			 console.log(data);   
-		   });
+		   });*/
+           $sessionStorage.convenios = [
+             {
+               id   : 1,
+               nome : "Unimed" 
+             },
+             {
+               id   : 2,
+               nome : "Santa Tereza"
+             },
+             {
+               id   : 3,
+               nome : "Beneficência Portuguesa"
+             }
+           ];
 		   // Pesquisamos todas as especialidades que essa clínica possui.
-		   $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorClinica/"+
+		   /*$http.get("http://wspaciente.cfapps.io/getEspecialidadesPorClinica/"+
 		              $sessionStorage.clinica.nome).success(function(data){
 		      $sessionStorage.especialidades = data;
 		      // Entramos na área da clínica selecionada.
 		      window.location.href = "areaEspecialidadeClinica.html";
 		   }).error(function(data){
 			 console.log(data);  
-		   });
+		   });*/
+           $sessionStorage.especialidades = [
+             {
+               id   : 1,
+               nome : "Reumatologia"
+             },
+             {
+               id   : 2,
+               nome : "Dermatologia"
+             },
+             {
+               id   : 3,
+               nome : "Otorrinolaringologia"
+             },
+             {
+               id   : 4,
+               nome : "Odontologia"
+             }
+           ];
+           window.location.href = "areaEspecialidadeClinica.html";
 		 });
 		 // Adicionamos um evento onmouseover para esse marcador já criado. Quando o paciente
 		 // passar o mouse por cima do marcador dessa clínica, seus dados principais serão exibidos.
@@ -275,13 +402,12 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   infowindow.open($scope.map,this);
 		 });
 	  }
-	  
-	  var prontoSocorros = $scope.prontoSocorros;
+
 	  // Para cada pronto socorro da lista de pronto socorros retornada, adicionados um marcador que irá 
 	  // representar essa pronto socorro no mapa.
 	  for (i = 0; i < prontoSocorros.length; i++){
 		 // Objeto do pronto socorro.
-		 var prontoSocorro = $scope.prontoSocorros[i];
+		 var prontoSocorro = prontoSocorros[i];
 		 // Adicionamos um marcador para esse pronto socorro.
 		 var marker = new google.maps.Marker({
 		   // A posição desse marcador será a localização desse pronto socorro (latitude e longitude), obtida no banco de dados.
@@ -304,19 +430,52 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   // obtemos o objeto desse pronto socorro com base em seu nome, que foi armazenado no título do marcador.
 		   $sessionStorage.ps = $scope.getPs(this.getTitle());
 		   // Pesquisamos todos os convênios que esse pronto socorro possui, com base no id do pronto socorro selecionado.
-		   $http.get("http://wspaciente.cfapps.io/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(data){
+		   /*$http.get("http://wspaciente.cfapps.io/getConveniosPorPs/"+$sessionStorage.ps.id).success(function(data){
 		     $sessionStorage.convenios = data; 
 		   }).error(function(data){
 		     console.log(data);   
-		   });
+		   });*/
+           $sessionStorage.convenios = [
+             {
+               id   : 1,
+               nome : "Unimed" 
+             },
+             {
+               id   : 2,
+               nome : "Santa Tereza"
+             },
+             {
+               id   : 3,
+               nome : "Beneficência Portuguesa"
+             }
+           ];
 		   // Pesquisamos todas as especialidades que esse pronto socorro possui.
-		   $http.get("http://wspaciente.cfapps.io/getEspecialidadesPorPs/"+
+		   /*$http.get("http://wspaciente.cfapps.io/getEspecialidadesPorPs/"+
 		              $sessionStorage.ps.nome).success(function(data){
 		      $sessionStorage.especialidades = data;
 		      window.location.href = "areaEspecialidadePs.html";
 		   }).error(function(data){
 			 console.log(data);  
-		   });
+		   });*/
+           $sessionStorage.especialidades = [
+             {
+               id   : 1,
+               nome : "Reumatologia"
+             },
+             {
+               id   : 2,
+               nome : "Dermatologia"
+             },
+             {
+               id   : 3,
+               nome : "Otorrinolaringologia"
+             },
+             {
+               id   : 4,
+               nome : "Odontologia"
+             }
+           ];
+           window.location.href = "areaEspecialidadePs.html";     
 		 });
 		 // Adicionamos um evento onmouseover para esse marcador já criado. Quando o paciente
 		 // passar o mouse por cima do marcador desse pronto socorro, seus dados principais serão exibidos.
@@ -326,15 +485,11 @@ app.controller("HomePacienteController",function($http,$scope,$sessionStorage){
 		   });
 		   infowindow.open($scope.map,this);
 		 });
-	  }
-	});                        
-	
-  };
+      }
+   }
   // Faz o mapa ser inicializado de fato no evento onload da página.
   google.maps.event.addDomListener(window,'load',$scope.inicializarMapa);
-    
-  $scope.inicializarMapa();  
-    
+  $scope.inicializarMapa();
 });
 
 app.controller("DadosMedicosController",function($http,$scope,$sessionStorage){
@@ -377,11 +532,44 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
 	// por meio da variável indice, que é o número da linha selecionada na tabela de especialidades.
 	$scope.especialidade = $scope.especialidades[indice];
 	// Pesquisa todos os médicos dessa clínica que trabalham na especialidade selecionada.
-	$http.get("http://wspaciente.cfapps.io/getMedicosPorEspecialidadeClinica/"+
+	/*$http.get("http://wspaciente.cfapps.io/getMedicosPorEspecialidadeClinica/"+
 			  $scope.especialidade.nome+"/"+$scope.clinica.nome).success(function(data){
 	  // Armazena esses medicos na variável de sessão para serem exibidos na próxima página.
 	  $sessionStorage.medicos = data;
-	  bootbox.alert({
+    }).error(function(data){
+      console.log(data);	
+    });*/
+      
+    $sessionStorage.medicos = [
+     {
+        id   : 1,
+        uf   : "SP",
+        crm  : "1218218",
+        nome : "Matheus Da Silva Ferraz"
+     },
+     {
+        id   : 2,
+        uf   : "SP",
+        crm  : "1291202",
+        nome : "Ana Clara Zoppi Serpa"
+         
+     },
+     {
+        id   : 3,
+        uf   : "SP",
+        crm  : "9181292",
+        nome : "Maria Luiza Gonçalves Esteves"
+         
+     },
+     {
+        id   : 4,
+        uf   : "SP",
+        crm  : "0128192",
+        nome : "Jimin Oshiro Nagasaki"
+     }
+    ];
+      
+    bootbox.alert({
 	    title:"<h3><center><span>Especialistas em "+$scope.especialidade.nome.toLowerCase()+"</span></center></h3>",
 	    message:function(){
 	    // Ao clicar em uma determinada especialidade, uma lista de médicos que atuam nessa especialidade é exibida
@@ -409,10 +597,10 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
 	          var medico = medicos[i];
 	          codigo +=
 			  "<tr class = 'row'"+
-			       "id = '"+medico.crm+"'"+
+			       "id = '"+medico.crm+"' "+
 			       "onclick = \""+
-			         "var crm = this.id;"+
-			         "window.location.href = 'visualizaConsulta.html?crm='+crm"+
+                     "var crm = this.id;"+
+			         "window.location.href = 'visualizaConsulta.html?crm='+crm;"+
 			       "\""+
 				   "onmouseover = \"this.style.cursor = 'pointer'\">"+
 				  "<td class = 'col-sm-9'>"+medico.nome+"</td>"+
@@ -436,9 +624,6 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
 	    'max-height':'560px',
         'overflow-y':'auto'
 	  }).scrollTop = 0;
-    }).error(function(data){
-      console.log(data);	
-    });
   };
   
   //Método que exibe os dados da clínica selecionada pelo paciente no mapa na página anterior.
@@ -462,11 +647,73 @@ app.controller("AreaEspecialidadeClinicaController",function($http,$scope,$sessi
 // Controller que manipula as operações na área que o paciente entra após selecionar um determinado médico.
 // Aqui será realizado o CRUD de consultas do paciente com base no médico e clínica selecionados anteriormente.
 app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filter){
+  var medicos = $sessionStorage.medicos;
+  $scope.paciente = $sessionStorage.paciente;
+    
+  $scope.getMedico = function(crm){
+	for (i = 0 ; i < medicos.length; i++)
+      if (medicos[i].crm == crm)
+        return medicos[i];
+  };
+    
+  // Obtém o crm do médico selecionado anteriormente através da URL.
+  var crm = window.location.search.slice(5);
+  $scope.medico = $scope.getMedico(crm);
+  $sessionStorage.medico = $scope.medico;
+    
   // Obtem os dados da clínica selecionada anteriormente e do paciente logado da variável de sessão $sessionStorage.
   $scope.clinica  = $sessionStorage.clinica;
   $scope.paciente = $sessionStorage.paciente;
-  // Obtém o crm do médico selecionado anteriormente através da URL.
-  var crm = window.location.search.slice(5);
+    
+  $scope.consultas = [
+   {
+    id       : 1,
+    paciente : $scope.paciente,
+    horario  : {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "08:00",
+      horaFim    : "08:20"
+    }
+   }
+  ];
+  $scope.especialidadesMedico = [
+    {
+      id   : 1,
+      nome : "Reumatologia"
+    },
+    {
+      id   : 2,
+      nome : "Dermatologia"
+    },
+    {
+      id   : 3,
+      nome : "Otorrinolaringologia"
+    },
+    {
+      id   : 4,
+      nome : "Odontologia"
+    }
+  ];
+  $sessionStorage.especialidadesMedico = $scope.especialidadesMedico;
+  /*
   $http.get("http://wspaciente.cfapps.io/getMedicoPorCrm/"+crm).success(function(data){
 	// Obtém o objeto do médico cujo crm é o obtido anteriormente e armazena esses dados no $sessionStorage.
 	$scope.medico = data;
@@ -479,11 +726,9 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 	  console.log(data);	
 	});
 	// Exibe todas as consultas que esse paciente possui com esse médico, nessa clínica.
-    $scope.exibirTodas();
-    
   }).error(function(data){
 	console.log(data);  
-  });
+  });*/
   
   // A variável data abaixo está relacionada ao campo txtData por meio do atributo ng-model, ou seja
   // ao alterarmos o valor da data no txtData, a variável aqui é atualizada automaticamente.
@@ -501,17 +746,6 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
     }).error(function(data){
       console.log(data);	
     });
-  };
-  
-  // Pesquisamos todas as consultas que esse paciente possui com esse médico, nessa clínica. A tabela de
-  // consultas é atualizada automaticamente por conta do atributo ng-repeat.
-  $scope.exibirTodas = function(){
-	$http.get("http://wspaciente.cfapps.io/getConsultasPorMedicoClinica/"+
-    		  $scope.medico.id+"/"+$scope.clinica.id).success(function(data){
-      $scope.consultas = data;
-    }).error(function(data){
-      console.log(data);	
-    });  
   };
   
   // Exibe os dados do médico: nome, CRM e especialidades em que atua.
@@ -548,12 +782,24 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
   $scope.selecionarConsulta = function(indice){
 	// Obtemos o objeto da consulta selecionada através da indexação no vetor de consultas armazenado, com base
 	// na variável indice, que é o número da linha selecionada na tabela de consultas.
-	$scope.consulta = $scope.consultas[indice];
 	// Armazena os dados dessa consulta no $sessionStorage.
 	$sessionStorage.consulta = $scope.consultas[indice];
 	$scope.fecharAlert();
 	bootbox.dialog({
-	  message:
+	  message:function(){
+        var consulta      = $sessionStorage.consulta;
+        var nomeClinica   = "Centro Clínico Sacramento"
+        var cidadeClinica = "Campinas";
+        var ufClinica     = "SP";
+        var nomeMedico    = "Matheus Da Silva Ferraz";
+        var crmMedico     = "1218218";
+        var ufMedico      = "SP";
+        var nomePaciente  = "Matheus Esteves Zanoto";
+        var horaInicio    = "08:00";
+        var horaFim       = "08:20";
+        var dataConsulta  = "27/09/2016";
+        var cpfPaciente   = "470.654.558-74";
+        return
 		"<style>"+
 		 ".titulo"+
          "{"+  
@@ -563,39 +809,37 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 		"</style>"+
         "<div class = 'form-group'>"+
           "<label class = 'titulo'>Clínica</label><br>"+
-          "<label>Nome: </label><span> "+$scope.consulta.horario.clinica.nome+"</span><br>"+
-          "<label>Cidade: </label><span> "+$scope.consulta.horario.clinica.cidade+"("+$scope.consulta.horario.clinica.uf+")</span>"+
+          "<label>Nome: </label><span>Centro Clínico Sacramento</span><br>"+
+          "<label>Cidade: </label><span>Campinas(SP)</span>"+
         "</div>"+
         "<div class = 'form-group'>"+
           "<label class = 'titulo'>Médico</label><br>"+
-          "<label>Nome: </label><span> "+$scope.consulta.horario.medico.nome+"</span><br>"+
-          "<label>CRM: </label><span> "+$scope.consulta.horario.medico.crm+"("+$scope.consulta.horario.medico.uf+")</span>"+
+          "<label>Nome: </label><span>Matheus Da Silva Ferraz</span><br>"+
+          "<label>CRM: </label><span>1218218(SP)</span>"+
         "</div>"+
         "<div class = 'form-group'>"+
           "<label class = 'titulo'>Paciente</label><br>"+
-          "<label>Nome: </label><span> "+$scope.consulta.paciente.nome+"</span><br>"+
+          "<label>Nome: </label><span>Matheus Esteves Zanoto</span><br>"+
           "<label>CPF: </label>"+
           "<span> "+ 
-            $scope.consulta.paciente.cpf.substring(0,3)+"."+
-            $scope.consulta.paciente.cpf.substring(3,6)+"."+
-            $scope.consulta.paciente.cpf.substring(6,9)+"-"+
-            $scope.consulta.paciente.cpf.substring(9,11)+
+            "470.654.558-74"+
           "</span>"+
         "</div>"+
         "<div class = 'form-group'>"+
           "<label class = 'titulo'>Horário</label><br>"+
           "<label>Data: </label>"+
-          "<span> "+$filter('date')($scope.consulta.horario.data,'dd/MM/yyyy')+"</span><br>"+
+          "<span>27/09/2016</span><br>"+
           "<label>Início da consulta: </label>"+
-          "<span> "+$scope.consulta.horario.horaInicio+"</span><br>"+
+          "<span>08:00</span><br>"+
           "<label>Término da consulta: </label>"+
-          "<span> "+$scope.consulta.horario.horaFim+"</span>"+
+          "<span>08:20</span>"+
         "</div><br>"+
         "<div class = 'form-group'>"+
           "<span style = 'font-family:Arial;font-size:16px;'>"+
             "O que você deseja realizar com essa consulta ?"+
           "</span>"+
-        "</div>",		 
+        "</div>";
+      },		 
 	  buttons:{
 		btnVoltar:{
 		  label:"Voltar",
@@ -608,7 +852,9 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 	      callback:function(){
 	        $scope.mensagem = "Deseja realmente cancelar essa consulta ?";
 	        bootbox.dialog({
-	        	message:
+	        	message:function(){
+                   var consulta = $sessionStorage.consulta;
+                   return 
 	        		"<style>"+
 	        		 ".titulo"+
 	                 "{"+  
@@ -618,39 +864,37 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 	        		"</style>"+
 	                "<div class = 'form-group'>"+
 	                  "<label class = 'titulo'>Clínica</label><br>"+
-	                  "<label>Nome: </label><span> "+$scope.consulta.horario.clinica.nome+"</span><br>"+
-	                  "<label>Cidade: </label><span> "+$scope.consulta.horario.clinica.cidade+"("+$scope.consulta.horario.clinica.uf+")</span>"+
+	                  "<label>Nome: </label><span>Centro Clínico Sacramento</span><br>"+
+	                  "<label>Cidade: </label><span>Campinas(SP)</span>"+
 	                "</div>"+
 	                "<div class = 'form-group'>"+
 	                  "<label class = 'titulo'>Médico</label><br>"+
-	                  "<label>Nome: </label><span> "+$scope.consulta.horario.medico.nome+"</span><br>"+
-	                  "<label>CRM: </label><span> "+$scope.consulta.horario.medico.crm+"("+$scope.consulta.horario.medico.uf+")</span>"+
+	                  "<label>Nome: </label><span>Matheus Da Silva Ferraz</span><br>"+
+	                  "<label>CRM: </label><span>1218218(SP)</span>"+
 	                "</div>"+
 	                "<div class = 'form-group'>"+
 	                  "<label class = 'titulo'>Paciente</label><br>"+
-	                  "<label>Nome: </label><span> "+$scope.consulta.paciente.nome+"</span><br>"+
+	                  "<label>Nome: </label><span>Matheus Esteves Zanoto</span><br>"+
 	                  "<label>CPF: </label>"+
 	                  "<span> "+ 
-	                    $scope.consulta.paciente.cpf.substring(0,3)+"."+
-	                    $scope.consulta.paciente.cpf.substring(3,6)+"."+
-	                    $scope.consulta.paciente.cpf.substring(6,9)+"-"+
-	                    $scope.consulta.paciente.cpf.substring(9,11)+
+	                    "470.654.558-74"+
 	                  "</span>"+
 	                "</div>"+
 	                "<div class = 'form-group'>"+
 	                  "<label class = 'titulo'>Horário</label><br>"+
 	                  "<label>Data: </label>"+
-	                  "<span> "+$filter('date')($scope.consulta.horario.data,'dd/MM/yyyy')+"</span><br>"+
+	                  "<span>27/09/2016</span><br>"+
 	                  "<label>Início da consulta: </label>"+
-	                  "<span> "+$scope.consulta.horario.horaInicio+"</span><br>"+
+	                  "<span>08:00</span><br>"+
 	                  "<label>Término da consulta: </label>"+
-	                  "<span> "+$scope.consulta.horario.horaFim+"</span>"+
+	                  "<span>08:20</span>"+
 	                "</div><br>"+
 	                "<div class = 'form-group'>"+
 	                  "<span style = 'font-family:Arial;font-size:16px;'>"+
 	                    "Deseja realmente cancelar essa consulta ?"+
 	                  "</span>"+
-	                "</div>",  
+	                "</div>";
+              },  
 	          buttons:{
 	            btnNao:{
 	              label:"Não",
@@ -663,12 +907,12 @@ app.controller("ConsultasController",function($http,$scope,$sessionStorage,$filt
 	            	// Cancelamos a consulta excluindo seu registro no banco de dados e excluimos também a consulta 
 	                // do vetor de consultas armazenado no cliente, atualizando automaticamente a tabela de consultas
 	            	// por conta do atributo ng-repeat do Angular.
-	                $http.get("http://wspaciente.cfapps.io/cancelarConsulta/"+$scope.consulta.id).success(function(data){
+	                //$http.get("http://wspaciente.cfapps.io/cancelarConsulta/"+$scope.consulta.id).success(function(data){
 	                  $scope.consultas.splice(indice,1);
 	                  $("#alertExclusaoConsulta").show();	
-	                }).error(function(data){
+	                /*}).error(function(data){
 	                  console.log(data);	
-	                });
+	                });*/
 	              }
 	            }
 	          }
@@ -698,7 +942,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
   $scope.especialidadesMedico = $sessionStorage.especialidadesMedico;
   
   // Pesquisamos todos os horários livres desse determinado médico, nessa determinado clinica.
-  $http.get("http://wspaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
+  /*$http.get("http://wspaciente.cfapps.io/getHorariosLivresPorMedicoClinica/"+
 		    $scope.consulta.horario.medico.id+"/"+$scope.consulta.horario.clinica.id).success(function(data){
 	// Os horários livres são atualizados na tabela de horários livres automaticamente por conta do atributo
 	// ng-repeat do Angular e também são armazenados no $sessionStorage.
@@ -706,7 +950,33 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
 	$sessionStorage.horarios = data;
   }).error(function(data){
 	console.log(data);  
-  });
+  });*/
+    
+  $scope.horarios = [
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "10:00",
+      horaFim    : "10:20"
+    }     
+  ];
   
   // A variável data abaixo está relacionada ao campo txtData por meio do atributo ng-model, ou seja
   // ao alterarmos o valor da data no txtData, a variável aqui é atualizada automaticamente.
@@ -758,24 +1028,7 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
 	// Obtém o objeto do horário livre selecionado, através da indexação no vetor de horários livres armazenado,
 	// com base na variável indice, que é o número da linha selecionada na tabela de horários livres.
     $scope.horario = $scope.horarios[indice];
-    // Verificamos se o paciente possui alguma consulta com outro médico ou em outra clínica, nessa
-    // mesma data e por volta desse mesmo período.
-    $http.post("http://wspaciente.cfapps.io/getConsultasPorHorario",$scope.horario).success(function(data){
-      if (data.length > 0){
-    	// Caso ele já possua essa consulta, os seus dados são informados e não deixamos ele reagendar
-    	// uma consulta nesse horário.
- 	    $scope.consultaAgendada = data[0];
-        bootbox.alert({
- 	      message:$("#consultaAgendada").html(),
- 	      buttons:{
- 	    	ok:{
- 	          label:"Voltar",
- 	          class:"btn-primary"
- 	    	}
- 	      }
- 	    });    
- 	  }
-      else{
+
     	// Caso ele não possua essa consulta, a página de reagendamento é liberada.
         bootbox.dialog({
           message:$("#alteracaoConsulta").html(),
@@ -792,21 +1045,20 @@ app.controller("AlteracaoConsultaController",function($http,$scope,$sessionStora
            		$scope.consulta.horario = $scope.horario;
            		$sessionStorage.consulta = $scope.consulta;
            		$scope.consulta.paciente.senha = "senha";
-           	    $http.post("http://wspaciente.cfapps.io/alterarConsulta",$scope.consulta).success(function(data){
+           	    /*$http.post("http://wspaciente.cfapps.io/alterarConsulta",$scope.consulta).success(function(data){
        	    	  $scope.horarios.splice(indice,1);
        			  $sessionStorage.horarios = $scope.horarios;
        			  $("#alertAlteracaoConsulta").show();
        	    	}).error(function(data){
        	    	  console.log(data);
-       	    	});
+       	    	});*/
+                $scope.horarios.splice(indice,1);
+       	        $sessionStorage.horarios = $scope.horarios;
+       	        $("#alertAlteracaoConsulta").show();
            	  }
             }
           }
         });  
-      }
-    }).error(function(data){
-      console.log(data);	
-    });
   };
 });
 
@@ -1157,23 +1409,6 @@ app.controller("CadastroPacienteController",function($http,$scope){
 	
   // Método que reúne os dados e cadastra um paciente no banco de dados, efetivamente.
   $scope.cadastrarPaciente = function(){
-   // Só poderemos liberar o cadastro caso não exista paciente cadastrado com o cpf digitado
-   // e caso o cep digitado exista.
-   if (!$scope.isCpfExistente && $scope.isCepValido){
-	// Devemos formatar o cpf, o celular e o telefone para que não contenha ponto, parenteses, traços ou espaços em branco
-	// no momento de enviar como parâmetro para o método incluirPaciente do web service de pacientes.
-    $scope.paciente.cpf = $scope.cpf.replace(".","").replace(".","").replace("-","");
-    $scope.paciente.telefone = $scope.telefone.replace("-","").replace("(","").replace(")","").replace(" ","");
-    $scope.paciente.celular = $scope.celular.replace("-","").replace("(","").replace(")","").replace(" ","");
-    
-    var dataNascimento = $("#txtDataNascimento").val();
-    // Montamos o endereço do paciente com base nos dados obtidos com o cep na busca por endereço no site viacep.
-    var endereco = $scope.logradouro+", "+$scope.numero;
-    $scope.paciente.dataNascimento = dataNascimento;
-    $scope.paciente.endereco = endereco;
-    
-    // Cadastramos o paciente de fato no banco de dados, com base no objeto formado.
-    $http.put("http://wspaciente.cfapps.io/incluirPaciente",$scope.paciente).success(function(data){
       bootbox.dialog({
        	 message:"O seu cadastro foi realizado com sucesso. Clique em prosseguir abaixo para a realização do login",
        	 buttons:{
@@ -1186,10 +1421,6 @@ app.controller("CadastroPacienteController",function($http,$scope){
        	   }   
        	 }	       	 
       });
-    }).error(function(data){
-      console.log(data);	
-    });
-   }
   };
 });
 

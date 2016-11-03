@@ -1,0 +1,8 @@
+15/08
+------
+
+http://stackoverflow.com/questions/15810278/if-else-statement-in-angularjs-templates
+Este site mostra como exibir os dados no Angular de forma condicional
+
+------
+criar um método no wsAdm getPacientesPorNome(String nome)

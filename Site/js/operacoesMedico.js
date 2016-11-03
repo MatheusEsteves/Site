@@ -33,7 +33,7 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	 // essa senha, ou seja, caso exista algum registro na tabela MedicoClinica tal que a senha seja 
 	 // a mesma que a digitada no formulário de login e o idMedico corresponda ao id de um médico com
 	 // o mesmo CRM digitado no formulário de login.
-     $http.post("http://wsmedico.cfapps.io/isMedicoClinica",loginMedico).success(function(data){
+     /*$http.post("http://wsmedico.cfapps.io/isMedicoClinica",loginMedico).success(function(data){
     	 // Após a realização do método isMedicoClinica, na própria Web Service de médicos, os dados do
     	 // médico são armazenados em um objeto.
 	     $scope.isMedicoExistente = data;
@@ -42,7 +42,6 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	     // utilização em outros métodos posteriormente.
 	     if ($scope.isMedicoExistente){
 	       $http.get("http://wsmedico.cfapps.io/getMedico").success(function(data){
-	    	 $sessionStorage.medico = data;
 	    	 $sessionStorage.loginMedico = loginMedico;
 	    	 // Posteriormente, pesquisaremos todas as clínicas relacionadas à esse médico. Como as clínicas
 	    	 // não sofrerão de atualizações constantes no banco de dados, pesquisados elas apenas uma vez como
@@ -65,7 +64,33 @@ app.controller("LoginMedicoController",function($http,$scope,$sessionStorage){
 	    	 message: 'O CRM e a senha que você digitou não coincidem.',
 	    	 buttons:{btnVoltar:{label:"Voltar",class:"btn-pimary"}}
 	       });
-	 });
+	 });*/
+     $sessionStorage.medico = {
+       id   : 1,
+       uf   : "SP",
+       crm  : "1218218",
+       nome : "Matheus Da Silva Ferraz"
+     };
+     $sessionStorage.especialidades = [
+       {
+         id   : 1,
+         nome : "Reumatologia"
+       },
+       {
+         id   : 2,
+         nome : "Dermatologia"
+       },
+       {
+         id   : 3,
+         nome : "Otorrinolaringologia"
+       },
+       {
+         id   : 4,
+         nome : "Odontologia"
+       }
+     ];
+       
+     window.location.href = "homeMedico.html";
    };
 });
 
@@ -76,10 +101,9 @@ app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
   // Os dados do médico, bem como suas especialidades, são obtidos da variável de sessão $sessionStorage.
   $scope.medico         = $sessionStorage.medico;
   $scope.especialidades = $sessionStorage.especialidades;
-  $scope.loginMedico    = $sessionStorage.loginMedico;
   // Caso já tenhamos pesquisado as clínicas no banco de dados, não pesquisaremos novamente ao entrar
   // nessa página, mas sim obteremos elas da variável de sessão $sessionStorage.
-  if ($sessionStorage.isClinicaJaPesquisada)
+  /*if ($sessionStorage.isClinicaJaPesquisada)
     $scope.clinicas = $sessionStorage.clinicas;
   else
 	// Caso ainda não tenhamos pesquisado as clínicas no banco de dados (primeira vez que entramos nessa página),
@@ -88,7 +112,44 @@ app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
       $scope.clinicas = data;
       $sessionStorage.clinicas = data;
       $sessionStorage.isClinicaJaPesquisada = true;
-    });
+    });*/
+  
+  $scope.clinicas = [
+        {   
+          id        : 1,
+          bairro    : "Jardim Guanabara",
+          endereco  : "Rua Eduardo Lane, 200",
+          nome      : "Clínica Lane",
+          telefone  : "1932020155",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8869532,
+          longitude : -47.1007114
+        },
+        {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+        },
+        {
+          id        : 3,
+          bairro    : "Cambuí",
+          endereco  : "Rua Doutor Sampaio Peixoto, 206",
+          nome      : "Murgel Odontologia",
+          telefone  : "1921190331",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8897432,
+          longitude : -47.0529384
+        }
+  ];
+  $sessionStorage.clinicas = $scope.clinicas;
     
   $scope.nomeClinica = "";
   $scope.pesquisarClinicasPorNome = function(){
@@ -128,36 +189,23 @@ app.controller("HomeMedicoController",function($http,$scope,$sessionStorage){
   $scope.selecionarClinica = function(indice){	
 	// Obtém o objeto da clínica selecionada, através da indexação no vetor das clínicas armazenadas com base
 	// na variável indice, que é o número da linha selecionada na tabela.
-	var clinica  = $scope.clinicas[indice];
-    bootbox.confirm({
-      message:"<span style = 'font-family:Arial;font-size:18px'> Deseja entrar em sua área da clínica "+clinica.nome+"? </span>",
-      buttons:{
-    	cancel:{
-          label     : 'Não',
-    	  className : 'btn-default'
-        },
-    	confirm:{
-    	  label     : 'Sim',
-    	  className : 'btn-primary'
-    	}
+    $sessionStorage.clinica = $scope.clinicas[indice];
+    $sessionStorage.convenios = [
+      {
+        id   : 1,
+        nome : "Unimed" 
       },
-      callback:function(result){
-    	// Caso o usuário deseje entrar na área da clínica selecionada, realizamos o método loginMedico do Web Service
-    	// de médicos, o qual recebe como parâmetro o id da clínica selecionada e com base nisso armazena os dados 
-    	// dessa clínica em um objeto no próprio Web Service de médicos.
-    	if (result){
-    	  $http.get("http://wsmedico.cfapps.io/loginMedico/"+clinica.id).success(function(data){
-    		// Também armazenamos os dados da clínica selecionada na variável de sessão $sessionStorage.
-    	    $sessionStorage.clinica = clinica;
-          });
-    	  // Obtemos todos os convênios que essa clínica possui e os armazenamos na variável de sessão $sessionStorage.
-    	  $http.get("http://wsmedico.cfapps.io/getConvenios").success(function(data){
-    	    $sessionStorage.convenios = data;
-    	    window.location.href = "visualizaHorario.html";
-    	  });
-        }
+      {
+        id   : 2,
+        nome : "Santa Tereza"
+      },
+      {
+        id   : 3,
+        nome : "Beneficência Portuguesa"
       }
-    });
+    ];
+    $sessionStorage.horarios = null;
+    window.location.href = "visualizaHorario.html";  
   };
 });
 
@@ -213,77 +261,158 @@ app.controller("InclusaoHorarioController",function($http,$scope,$filter,$sessio
   
   // Incluímos horários em série no banco de dados com base nos dados armazenados no objeto horario.
   $scope.incluirHorario = function(){
-    // Horário de início das atividades (em segundos).
-    var horaInicio = 
-      horario.horaInicio.getSeconds() +
-      horario.horaInicio.getMinutes()*60+
-      horario.horaInicio.getHours()*3600;
-    // Horário de término das atividades (em segundos).
-    var horaFim = 
-      horario.horaFim.getSeconds()+
-      horario.horaFim.getMinutes()*60+
-      horario.horaFim.getHours()*3600;
+    var horario    = $scope.horario;
+    var dataInicio = horario.dataInicio.getTime();
+    var dataFim    = horario.dataFim.getTime();
       
-    
-	var horario       = $scope.horario;
-	// Calculamos o tempo que o método ficará trabalhando (em segundos), com base no horário de
-	// início das atividades e no horário de término.
-	var tempoTrabalho = horaFim - horaInicio;
-	// Calculamos o tempo entre o início de uma consulta o início de outra posterior (em segundos), 
-	// com base na duração de cada consulta (em segundos) e no intervalo entre as consultas (em segundos).
-	var tempoEntreConsultas = 
-	  // Duração de cada consulta (em segundos).
-	  (horario.duracao.getSeconds()+ 
-	   horario.duracao.getMinutes()*60+
-	   horario.duracao.getHours()*3600)+
-	   // Intervalo entre as consultas (em segundos).
-	  (horario.intervalo.getSeconds()+
-	   horario.intervalo.getMinutes()*60+
-	   horario.intervalo.getHours()*3600);
-	// Pensemos no seguinte caso como exemplo: o tempo de trabalho é de 100 segundos e o tempo 
-	// entre o início de uma consulta e o início de outra posterior é de 15 segundos. Para obtermos
-	// o número de consultas com base nesses dados, não podemos fazer 100/15, pois isso não resultaria
-	// em um número natural. Temos que obter o número máximo de períodos de 15 segundos em um período maior
-	// de 100 segundos, que seria 6, pois 15*6 = 90 (próximo de 100) e 15*7 = 105 (ultrapassa 100). Logo,
-	// nesse caso, para obter o número de períodos de 15 segundos, devemos retirar 10 (resto da divisão 
-	// de 100 por 15) de 100, para resultar em 90 (número divisível por 15).
-	var resto         = tempoTrabalho % tempoEntreConsultas;
-	var qtasConsultas = (tempoTrabalho - resto)/tempoEntreConsultas;
+    if (dataInicio > dataFim)
+      $("#alertDataInvalida").show();
+    else{
+      // Horário de início das atividades (em segundos).
+      var horaInicio = 
+        horario.horaInicio.getSeconds() +
+        horario.horaInicio.getMinutes()*60+
+        horario.horaInicio.getHours()*3600;
+      // Horário de término das atividades (em segundos).
+      var horaFim = 
+        horario.horaFim.getSeconds()+
+        horario.horaFim.getMinutes()*60+
+        horario.horaFim.getHours()*3600;
+        
+      if (horaInicio > horaFim)
+        $("#alertHoraInvalida").show();
+      else{
+	    // Calculamos o tempo que o método ficará trabalhando (em segundos), com base no horário de
+	    // início das atividades e no horário de término.
+	    var tempoTrabalho = horaFim - horaInicio;
+	    // Calculamos o tempo entre o início de uma consulta o início de outra posterior (em segundos), 
+	    // com base na duração de cada consulta (em segundos) e no intervalo entre as consultas (em segundos).
+        var tempoEntreConsultas = 
+	    // Duração de cada consulta (em segundos).
+	    (horario.duracao.getSeconds()+ 
+  	     horario.duracao.getMinutes()*60+
+	     horario.duracao.getHours()*3600)+
+	    // Intervalo entre as consultas (em segundos).
+	    (horario.intervalo.getSeconds()+
+         horario.intervalo.getMinutes()*60+
+	     horario.intervalo.getHours()*3600); 
+          
+       if (tempoTrabalho < tempoEntreConsultas)
+         $("#alertTempoInvalido").show();
+       else{
+         // Pensemos no seguinte caso como exemplo: o tempo de trabalho é de 100 segundos e o tempo 
+	     // entre o início de uma consulta e o início de outra posterior é de 15 segundos. Para obtermos
+	     // o número de consultas com base nesses dados, não podemos fazer 100/15, pois isso não resultaria
+	     // em um número natural. Temos que obter o número máximo de períodos de 15 segundos em um período maior
+	     // de 100 segundos, que seria 6, pois 15*6 = 90 (próximo de 100) e 15*7 = 105 (ultrapassa 100). Logo,
+	     // nesse caso, para obter o número de períodos de 15 segundos, devemos retirar 10 (resto da divisão 
+	     // de 100 por 15) de 100, para resultar em 90 (número divisível por 15).
+	     var resto         = tempoTrabalho % tempoEntreConsultas;
+	     var qtasConsultas = (tempoTrabalho - resto)/tempoEntreConsultas;
 	
-	horario.horaInicio.setSeconds(0);
-	horario.duracao.setSeconds(0);
-	horario.intervalo.setSeconds(0);
+	     horario.horaInicio.setSeconds(0);
+	     horario.duracao.setSeconds(0);
+ 	     horario.intervalo.setSeconds(0);
 	
-	// Cadastramos os horários efetivamente com base nos dados obtidos.
-    $http.get(
-      "http://wsmedico.cfapps.io/cadastrarHorario/"+
-      horario.dia+"/"+
-      horario.dataInicio.getFullYear()+"-"+
-      (horario.dataInicio.getMonth()+1)+"-"+
-      horario.dataInicio.getDate()+"/"+
-      horario.dataFim.getFullYear()+"-"+
-      (horario.dataFim.getMonth()+1)+"-"+
-      horario.dataFim.getDate()+"/"+
-      horario.horaInicio.getHours()+":"+
-      horario.horaInicio.getMinutes()+":"+
-      horario.horaInicio.getSeconds()+"/"+
-      horario.duracao.getHours()+":"+
-      horario.duracao.getMinutes()+":"+
-      horario.duracao.getSeconds()+"/"+
-      horario.intervalo.getHours()+":"+
-      horario.intervalo.getMinutes()+":"+
-      horario.intervalo.getSeconds()+"/"+
-      qtasConsultas
-    ).success(function(data){
-      $("#alertInclusao").show();
-      // Após cadastrarmos os horários, atualizamos o vetor de horários no $sessionStorage,
-      // para que a tabela de horários seja atualizada automaticamente.
-      $http.get("http://wsmedico.cfapps.io/getHorarios").success(function(data){
-        $sessionStorage.horarios = data; 
-      });
-    }).error(function(data){
-      $("#alertErroInclusao").show();
-    });
+	     // Cadastramos os horários efetivamente com base nos dados obtidos.
+         /*$http.get(
+          "http://wsmedico.cfapps.io/cadastrarHorario/"+
+           horario.dia+"/"+
+           horario.dataInicio.getFullYear()+"-"+
+          (horario.dataInicio.getMonth()+1)+"-"+
+           horario.dataInicio.getDate()+"/"+
+           horario.dataFim.getFullYear()+"-"+
+          (horario.dataFim.getMonth()+1)+"-"+
+           horario.dataFim.getDate()+"/"+
+           horario.horaInicio.getHours()+":"+
+           horario.horaInicio.getMinutes()+":"+
+           horario.horaInicio.getSeconds()+"/"+
+           horario.duracao.getHours()+":"+
+           horario.duracao.getMinutes()+":"+
+           horario.duracao.getSeconds()+"/"+
+           horario.intervalo.getHours()+":"+
+           horario.intervalo.getMinutes()+":"+
+           horario.intervalo.getSeconds()+"/"+
+           qtasConsultas
+          ).success(function(data){
+            $("#alertInclusao").show();
+            // Após cadastrarmos os horários, atualizamos o vetor de horários no $sessionStorage,
+            // para que a tabela de horários seja atualizada automaticamente.
+            $http.get("http://wsmedico.cfapps.io/getHorarios").success(function(data){
+              $sessionStorage.horarios = data; 
+            });
+          }).error(function(data){
+            $("#alertErroInclusao").show();
+        });*/
+        var numeroDia;
+        switch(horario.dia){
+         case "DOM" : numeroDia = 0;
+         case "SEG" : numeroDia = 1;
+         case "TER" : numeroDia = 2;
+         case "QUA" : numeroDia = 3;
+         case "QUI" : numeroDia = 4;
+         case "SEX" : numeroDia = 5;
+         case "SÁB" : numeroDia = 6;
+         default    : numeroDia = -1;
+	   }
+	   var tempoDataInicio = horario.dataInicio.getTime();
+	   var tempoDataFim    = horario.dataFim.getTime();
+	   var tempoUmDia      = 24*60*60*1000;
+	   for (var tempoData = tempoDataInicio; tempoData <= tempoDataFim; tempoData += tempoUmDia){
+		 var data = new Date(tempoData);
+	     if (data.getDay() == numeroDia){
+           //guarda o horário de início do médico, ou seja, o momento em que o médico
+           //inicia a consulta (em minutos. Ex. Se o médico começa consultar às 8:20 
+           //inicioTrabalho
+           //terá o valor 500, porque 8*60+20 = 500 minutos)
+           var inicioTrabalho = horario.horaInicio.getHours()*60+horario.horaInicio.getMinutes();   
+       
+           //o intervalo entre duas consultados (em minutos)
+           var intervaloConsulta = horario.intervalo.getHours()*60+horario.intervalo.getMinutes();
+       
+           //a duração de uma consulta (em minutos)
+           var duracaoConsulta = horario.duracao.getHours()*60+horario.duracao.getMinutes();     
+       
+           var horaInicioConsulta = null;
+           var horaFimConsulta    = null;
+           var inicioConsulta     = 0;
+           var fimConsulta        = 0;
+       
+           //gera todos os registros de horário a ser cadastrado
+           for(var i = 0; i < qtasConsultas; i++)
+           {       
+             //calcula qual será o horario de início e de fim de cada consulta
+             inicioConsulta = inicioTrabalho + i*(duracaoConsulta +intervaloConsulta);
+             fimConsulta = inicioConsulta+duracaoConsulta;
+        
+             // Converte a hora de início da consulta de minutos para horas e minutos.
+             var minutos = inicioConsulta%60;
+             var horas   = (inicioConsulta-minutos)/60;
+             var horaInicioConsulta = new Time(horas,minutos,0);
+         
+             // Converte a hora de término da consulta de minutos para horas e minutos.
+             minutos = fimConsulta%60;
+             horas   = (fimConsulta-minutos)/60;
+             var horaFimConsulta = new Time(horas,minutos,0);
+             
+             console.log(horario);
+             var horario = {
+               id         : i+1,
+               medico     : $scope.medico,
+               clinica    : $scope.clinica,
+               data       : data,
+               horaInicio : horaInicioConsulta,
+               horaFim    : horaFimConsulta
+             };
+             $sessionStorage.horarios.push(horario);
+           }  
+         }
+       }
+       //console.log($sessionStorage.horarios);
+       //window.location.href = "visualizaHorario.html";
+     }
+    }
+    }
   };
 });
 
@@ -356,13 +485,148 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
     }).scrollTop = 0;
   };
   
-  // Pesquisa todos os horários do médico logado e armazena-os na variável de sessão $sessionStorage.
+  /*// Pesquisa todos os horários do médico logado e armazena-os na variável de sessão $sessionStorage.
   $http.get("http://wsmedico.cfapps.io/getHorarios").success(function(data){
     $scope.horarios = data;
     $sessionStorage.horarios = data;
   }).error(function(erro){
     console.log(erro);	  
-  });
+  });*/
+    
+  if ($sessionStorage.horarios != null)
+    $scope.horarios = $sessionStorage.horarios;
+  else
+  $scope.horarios = [
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "10:00",
+      horaFim    : "10:20"
+    },
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "10:30",
+      horaFim    : "11:00"
+    },
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "11:40",
+      horaFim    : "12:00"
+    },
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "12:30",
+      horaFim    : "12:45"
+    },
+    {
+      id : 1,
+      medico : {
+          id   : 1,
+          uf   : "SP",
+          crm  : "1218218",
+          nome : "Matheus Da Silva Ferraz"
+      },
+      clinica : {
+          id        : 2,
+          bairro    : "Vila Itapura",
+          endereco  : "Rua Sacramento, 900",
+          nome      : "Centro Clínico Sacramento",
+          telefone  : "1932325097",
+          cidade    : "Campinas",
+          uf        : "SP",
+          latitude  : -22.8961645,
+          longitude : -47.0640828
+      },
+      data       : "27/09/2016",
+      horaInicio : "14:00",
+      horaFim    : "14:20"
+    }     
+  ];
+  $sessionStorage.horarios = $scope.horarios;
+  console.log($scope.horarios);
+    
+  $scope.setData = function(){
+    $scope.data = $("#txtData").val();
+  };
+    
+  $scope.setHoraInicio = function(){
+    $scope.horaInicio = $("#txtHoraInicio").val();
+  };
+    
+  $scope.setHoraFim = function(){
+    $scope.horaFim = $("#txtHoraFim").val();    
+  };
   
   // Método que trata a manipulação dos dados de um horário selecionado dentre todos os horários da tabela.
   $scope.selecionarHorario = function(indice){  
@@ -420,10 +684,13 @@ app.controller("HorariosController",function($http,$scope,$filter,$sessionStorag
 			  callback:function(result){
 				if (result){
 				  // Excluímos o horário selecionado efetivamente.
-			      $http.get("http://wsmedico.cfapps.io/excluirHorario/"+$scope.horario.id); 
+			      /*$http.get("http://wsmedico.cfapps.io/excluirHorario/"+$scope.horario.id); 
 			      $scope.horarios.splice(indice,1);
 				  $sessionStorage.horarios = $scope.horarios;
-				  $("#alertExclusao").show(); 
+				  $("#alertExclusao").show();*/ 
+                  $scope.horarios.splice(indice,1);
+				  $sessionStorage.horarios = $scope.horarios;
+				  $("#alertExclusao").show();
 				}
 			  }
 			});
